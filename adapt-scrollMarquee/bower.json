@@ -6,7 +6,7 @@
   "displayName": "Scroll Marquee",
   "component": "scrollMarquee",
   "description": "A scroll-velocity-based marquee component using GSAP ScrollTrigger",
-  "main": "/js/scrollMarquee.js",
+  "main": "/js/adapt-scrollMarquee.js",
   "keywords": [
     "adapt-plugin",
     "adapt-component",

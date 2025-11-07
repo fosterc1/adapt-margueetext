@@ -1,0 +1,29 @@
+{{import_globals}}
+<div class="component__inner scroll-marquee__inner-wrapper">
+
+  {{> component this}}
+
+  <div class="component__widget scroll-marquee__widget">
+
+    <div class="scroll-marquee__block">
+      <div class="scroll-marquee__inner">
+        {{#each _items}}
+        <div class="scroll-marquee__item {{#if _classes}}{{_classes}}{{/if}}">
+          {{#if _graphic.src}}
+          <div class="scroll-marquee__item-image">
+            <img src="{{_graphic.src}}" alt="{{#if alt}}{{alt}}{{/if}}" aria-label="{{#if alt}}{{alt}}{{/if}}" />
+            {{#if attribution}}
+            <div class="scroll-marquee__item-attribution">
+              {{{compile attribution}}}
+            </div>
+            {{/if}}
+          </div>
+          {{/if}}
+        </div>
+        {{/each}}
+      </div>
+    </div>
+
+  </div>
+
+</div>
