@@ -1,0 +1,56 @@
+{
+  "_id": "c-105",
+  "_parentId": "b-55",
+  "_type": "component",
+  "_component": "scrollMarquee",
+  "_classes": "",
+  "_layout": "full",
+  "title": "Scroll-Based Marquee",
+  "displayTitle": "Scroll-Based Marquee",
+  "body": "Scroll down to see the marquee move based on your scroll speed. The faster you scroll, the faster the images move.",
+  "instruction": "",
+  "_speed": 0.01,
+  "_setCompletionOn": "inview",
+  "_items": [
+    {
+      "_graphic": {
+        "src": "course/en/images/marquee-image-1.jpg"
+      },
+      "alt": "Image 1",
+      "attribution": "",
+      "_classes": ""
+    },
+    {
+      "_graphic": {
+        "src": "course/en/images/marquee-image-2.jpg"
+      },
+      "alt": "Image 2",
+      "attribution": "",
+      "_classes": ""
+    },
+    {
+      "_graphic": {
+        "src": "course/en/images/marquee-image-3.jpg"
+      },
+      "alt": "Image 3",
+      "attribution": "",
+      "_classes": ""
+    },
+    {
+      "_graphic": {
+        "src": "course/en/images/marquee-image-4.jpg"
+      },
+      "alt": "Image 4",
+      "attribution": "",
+      "_classes": ""
+    },
+    {
+      "_graphic": {
+        "src": "course/en/images/marquee-image-5.jpg"
+      },
+      "alt": "Image 5",
+      "attribution": "",
+      "_classes": ""
+    }
+  ]
+}

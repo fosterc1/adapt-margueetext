@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scroll Marquee Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+    }
+
+    .hero {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+    }
+
+    .hero h1 {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    .hero p {
+      font-size: 1.5rem;
+      opacity: 0.9;
+    }
+
+    .content {
+      background: white;
+      padding: 4rem 2rem;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h2 {
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .description {
+      text-align: center;
+      font-size: 1.2rem;
+      margin-bottom: 4rem;
+      color: #666;
+    }
+
+    .marquee-block {
+      overflow: hidden;
+      width: 100%;
+      background: #f8f9fa;
+      padding: 3rem 0;
+      margin: 4rem 0;
+    }
+
+    .marquee-inner {
+      display: flex;
+      width: max-content;
+      will-change: transform;
+      gap: 2rem;
+    }
+
+    .marquee-item {
+      flex-shrink: 0;
+      background: white;
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .marquee-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .marquee-item img {
+      width: 300px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .info {
+      background: #f0f0f0;
+      padding: 3rem 2rem;
+      margin-top: 4rem;
+      border-radius: 12px;
+    }
+
+    .info h3 {
+      margin-bottom: 1rem;
+    }
+
+    .info ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .info li {
+      padding: 0.5rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+
+    .info li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #667eea;
+      font-weight: bold;
+    }
+
+    .spacer {
+      height: 50vh;
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+      
+      .hero p {
+        font-size: 1.2rem;
+      }
+
+      .marquee-item img {
+        width: 200px;
+        height: 150px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <div>
+      <h1>Scroll Marquee Effect</h1>
+      <p>Scroll down to see the magic ✨</p>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="container">
+      <h2>Scroll-Velocity Based Marquee</h2>
+      <p class="description">
+        The images below move based on your scroll speed. Try scrolling fast and slow to see the difference!
+      </p>
+
+      <div class="marquee-block">
+        <div class="marquee-inner">
+          <div class="marquee-item">
+            <img src="https://picsum.photos/300/200?random=1" alt="Image 1">
+          </div>
+          <div class="marquee-item">
+            <img src="https://picsum.photos/300/200?random=2" alt="Image 2">
+          </div>
+          <div class="marquee-item">
+            <img src="https://picsum.photos/300/200?random=3" alt="Image 3">
+          </div>
+          <div class="marquee-item">
+            <img src="https://picsum.photos/300/200?random=4" alt="Image 4">
+          </div>
+          <div class="marquee-item">
+            <img src="https://picsum.photos/300/200?random=5" alt="Image 5">
+          </div>
+        </div>
+      </div>
+
+      <div class="info">
+        <h3>Features:</h3>
+        <ul>
+          <li>Responds to scroll velocity</li>
+          <li>Infinite seamless loop</li>
+          <li>Smooth GSAP animations</li>
+          <li>Fully responsive</li>
+          <li>Easy to customize</li>
+          <li>Accessible and performant</li>
+        </ul>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="info">
+        <h3>How it works:</h3>
+        <p>
+          This effect uses GSAP's ScrollTrigger plugin to detect scroll velocity and translate
+          that into horizontal movement of the marquee. The faster you scroll, the faster the
+          images move. Items are duplicated to create an infinite loop effect.
+        </p>
+      </div>
+
+      <div class="spacer"></div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    const marquee = document.querySelector('.marquee-inner');
+    const items = Array.from(marquee.children);
+
+    // Duplicate items for infinite seamless loop
+    items.forEach(el => marquee.appendChild(el.cloneNode(true)));
+
+    let xPos = 0;
+
+    ScrollTrigger.create({
+      trigger: ".marquee-block",
+      start: "top bottom",
+      end: "bottom top",
+      scrub: true,
+      onUpdate(self) {
+        // The number can be adjusted to change speed
+        const speed = self.getVelocity() * 0.01;
+
+        xPos -= speed;
+
+        // Reset to prevent large numbers / looping seamlessly
+        if (xPos <= -marquee.offsetWidth / 2) xPos = 0;
+        if (xPos >= 0) xPos = -marquee.offsetWidth / 2;
+
+        gsap.set(marquee, {
+          x: xPos
+        });
+      }
+    });
+  </script>
+</body>
+</html>

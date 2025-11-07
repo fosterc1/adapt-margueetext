@@ -1,0 +1,20 @@
+{
+  "name": "adapt-scrollMarquee",
+  "version": "1.0.0",
+  "framework": "^5.0.0",
+  "homepage": "https://github.com/yourusername/adapt-scrollMarquee",
+  "displayName": "Scroll Marquee",
+  "component": "scrollMarquee",
+  "description": "A scroll-velocity-based marquee component using GSAP ScrollTrigger",
+  "main": "/js/scrollMarquee.js",
+  "keywords": [
+    "adapt-plugin",
+    "adapt-component",
+    "marquee",
+    "scroll",
+    "gsap",
+    "scrolltrigger"
+  ],
+  "license": "GPL-3.0",
+  "targetAttribute": "_component"
+}

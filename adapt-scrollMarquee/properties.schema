@@ -1,0 +1,104 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "id": "http://jsonschema.net",
+  "required": false,
+  "globals": {},
+  "properties": {
+    "pluginLocations": {
+      "type": "object",
+      "required": true,
+      "properties": {
+        "config": {
+          "type": "object"
+        },
+        "course": {
+          "type": "object"
+        },
+        "contentobject": {
+          "type": "object"
+        },
+        "article": {
+          "type": "object"
+        },
+        "block": {
+          "type": "object"
+        },
+        "component": {
+          "type": "object",
+          "properties": {
+            "scrollMarquee": {
+              "type": "object",
+              "properties": {
+                "_speed": {
+                  "type": "number",
+                  "required": false,
+                  "default": 0.01,
+                  "title": "Scroll Speed Multiplier",
+                  "inputType": "Number",
+                  "validators": ["number"],
+                  "help": "Controls the speed of the marquee relative to scroll velocity. Higher values = faster movement."
+                },
+                "_items": {
+                  "type": "array",
+                  "required": true,
+                  "title": "Marquee Items",
+                  "items": {
+                    "type": "object",
+                    "required": false,
+                    "properties": {
+                      "_graphic": {
+                        "type": "object",
+                        "required": true,
+                        "title": "Graphic",
+                        "properties": {
+                          "src": {
+                            "type": "string",
+                            "required": true,
+                            "default": "",
+                            "inputType": "Asset:image",
+                            "validators": ["required"],
+                            "help": "Image to display in the marquee"
+                          }
+                        }
+                      },
+                      "alt": {
+                        "type": "string",
+                        "required": false,
+                        "default": "",
+                        "title": "Alternative Text",
+                        "inputType": "Text",
+                        "validators": [],
+                        "help": "A description of the image for accessibility",
+                        "translatable": true
+                      },
+                      "attribution": {
+                        "type": "string",
+                        "required": false,
+                        "default": "",
+                        "title": "Attribution",
+                        "inputType": "Text",
+                        "validators": [],
+                        "help": "Text to be displayed as attribution for the image",
+                        "translatable": true
+                      },
+                      "_classes": {
+                        "type": "string",
+                        "required": false,
+                        "default": "",
+                        "title": "Custom Classes",
+                        "inputType": "Text",
+                        "validators": [],
+                        "help": "Custom CSS classes to apply to this item"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

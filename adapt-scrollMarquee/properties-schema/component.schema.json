@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://adaptlearning.org/schemas/component/scrollMarquee.schema.json",
+  "type": "object",
+  "title": "Scroll Marquee",
+  "description": "A scroll-velocity-based marquee component using GSAP ScrollTrigger",
+  "required": ["_items"],
+  "properties": {
+    "_supportedLayout": {
+      "type": "string",
+      "title": "Supported layout",
+      "default": "both",
+      "enum": ["full-width", "half-width", "both"],
+      "_adapt": {
+        "editorOnly": true
+      }
+    },
+    "instruction": {
+      "type": "string",
+      "title": "Instruction",
+      "description": "Instruction text for the component",
+      "default": "",
+      "_adapt": {
+        "translatable": true
+      }
+    },
+    "_speed": {
+      "type": "number",
+      "title": "Scroll speed multiplier",
+      "description": "Controls the speed of the marquee relative to scroll velocity. Higher values = faster movement",
+      "default": 0.01,
+      "minimum": 0.001,
+      "maximum": 0.1
+    },
+    "_setCompletionOn": {
+      "type": "string",
+      "title": "Set completion on",
+      "description": "When to mark the component as complete",
+      "default": "inview",
+      "enum": ["inview", "manual"],
+      "_backboneForms": "Select"
+    },
+    "_items": {
+      "type": "array",
+      "title": "Marquee items",
+      "description": "Items to display in the marquee",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "title": "Item",
+        "required": ["_graphic"],
+        "properties": {
+          "_graphic": {
+            "type": "object",
+            "title": "Graphic",
+            "required": ["src"],
+            "properties": {
+              "src": {
+                "type": "string",
+                "title": "Image source",
+                "description": "Path to the image file",
+                "default": "",
+                "_backboneForms": {
+                  "type": "Asset",
+                  "media": "image"
+                }
+              }
+            }
+          },
+          "alt": {
+            "type": "string",
+            "title": "Alternative text",
+            "description": "A description of the image for accessibility",
+            "default": "",
+            "_adapt": {
+              "translatable": true
+            }
+          },
+          "attribution": {
+            "type": "string",
+            "title": "Attribution",
+            "description": "Text to be displayed as attribution for the image",
+            "default": "",
+            "_adapt": {
+              "translatable": true
+            }
+          },
+          "_classes": {
+            "type": "string",
+            "title": "Custom classes",
+            "description": "Custom CSS classes to apply to this item",
+            "default": ""
+          }
+        }
+      }
+    }
+  }
+}
