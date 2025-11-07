@@ -1,321 +1,113 @@
-# Adapt Scroll Marquee Component - Complete Package
+# adapt-scrollMarquee
 
-A production-ready Adapt Learning Framework component that creates a scroll-velocity-based marquee effect using GSAP ScrollTrigger.
+**Scroll Marquee** is a _presentation component_ which displays a horizontal scrolling marquee of images that responds to scroll velocity.
 
-## 🎯 What This Is
+The marquee speed is controlled by the user's scroll speed - the faster you scroll, the faster the images move. The component creates an infinite seamless loop using GSAP ScrollTrigger.
 
-This is a complete implementation of the scroll-based marquee effect from [this CodePen](https://codepen.io/ahoyhoy/pen/PwZrGpG) as an Adapt Authoring Tool component plugin.
+[**View the demo**](example/demo.html)
 
-## 📦 Package Contents
+## Settings Overview
 
-- **Complete Component Plugin** (`adapt-scrollMarquee/`)
-- **Comprehensive Documentation** (5 guide files)
-- **Working Demo** (Standalone HTML example)
-- **Example Configurations**
-- **Full Source Code**
+The attributes listed below are used in _components.json_ to configure **Scroll Marquee**, and are properly formatted as JSON in [_example.json_](https://github.com/fosterc1/adapt-margueetext/blob/main/example.json).
 
-## 🚀 Quick Start
+## Attributes
 
-### 1. View the Demo
+[**core model attributes**](https://github.com/adaptlearning/adapt_framework/wiki/Core-model-attributes): These are inherited by every Adapt component. [Read more](https://github.com/adaptlearning/adapt_framework/wiki/Core-model-attributes).
 
-Open the standalone demo to see the effect:
+### \_component (string):
+This must be set to: `"scrollMarquee"`.
 
-```bash
-# Navigate to the demo
-cd adapt-scrollMarquee/example/
-open demo.html  # or double-click the file
+### \_classes (string):
+CSS class name(s) to be applied to this component's containing `div`. The class(es) must be predefined in one of the Less files. Separate multiple classes with a space.
+
+### \_layout (string):
+Defines the horizontal position of the component in the block. Acceptable values are `"full"`, `"left"` or `"right"`. For best visual effect, `"full"` is recommended.
+
+### instruction (string):
+This optional text appears above the component. It is frequently used to guide the learner's interaction with the component.
+
+### \_setCompletionOn (string):
+Determines when Adapt will register this component as having been completed by the learner. Acceptable values are `"inview"` and `"manual"`. The default is `"inview"`.
+
+### \_speed (number):
+Controls the speed multiplier for the marquee animation relative to scroll velocity. Higher values result in faster movement. The default is `0.01`. Acceptable range is `0.001` to `0.1`.
+- `0.005` - Very slow, subtle movement
+- `0.01` - Default, balanced (recommended)
+- `0.02` - Fast, dramatic effect
+- `0.05` - Very fast movement
+
+### \_items (array):
+The items array contains the list of all the images to display in the marquee. Each entry in the array should be an object, containing the following settings:
+
+#### \_graphic (object):
+The graphic object defines the image that displays in the marquee and contains the following settings:
+
+##### src (string):
+File name (including path) of the image. Path should be relative to the `src` folder (e.g., `"course/en/images/marquee-1.jpg"`).
+
+#### alt (string):
+The alternative text for the image. Assign [alt text](https://github.com/adaptlearning/adapt_framework/wiki/Providing-good-alt-text) to images that convey course content only.
+
+#### attribution (string):
+Optional text to be displayed as an [attribution](https://wiki.creativecommons.org/Best_practices_for_attribution). By default it is displayed below the image. Text can contain HTML tags.
+
+#### \_classes (string):
+CSS class name(s) to be applied to this specific marquee item. Separate multiple classes with a space.
+
+## Dependencies
+
+This component requires:
+- **GSAP (GreenSock Animation Platform)** v3.0+
+- **ScrollTrigger Plugin** (included with GSAP)
+
+The component will automatically load GSAP from CDN if not already present in your course.
+
+### Manual GSAP Installation (Optional)
+
+If you prefer to include GSAP manually, add to your course's `src/core/index.html`:
+
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 ```
 
-### 2. Install in Your Adapt Course
+## Accessibility
 
-```bash
-# Copy to your Adapt course components directory
-cp -r adapt-scrollMarquee /path/to/your/adapt-course/src/components/
-```
-
-### 3. Configure and Use
-
-Add to your course JSON:
-
-```json
-{
-  "_component": "scrollMarquee",
-  "_layout": "full",
-  "title": "Scroll Marquee",
-  "displayTitle": "Scroll Marquee Effect",
-  "body": "Scroll to see the images move!",
-  "_speed": 0.01,
-  "_items": [
-    {
-      "_graphic": { "src": "course/en/images/img1.jpg" },
-      "alt": "Image 1"
-    },
-    {
-      "_graphic": { "src": "course/en/images/img2.jpg" },
-      "alt": "Image 2"
-    },
-    {
-      "_graphic": { "src": "course/en/images/img3.jpg" },
-      "alt": "Image 3"
-    }
-  ]
-}
-```
-
-## 📚 Documentation
-
-| Document | Purpose | Read Time |
-|----------|---------|-----------|
-| **[QUICK_START.md](adapt-scrollMarquee/QUICK_START.md)** | Get started in 5 minutes | 3 min |
-| **[INSTALLATION.md](adapt-scrollMarquee/INSTALLATION.md)** | Detailed installation guide | 8 min |
-| **[README.md](adapt-scrollMarquee/README.md)** | Complete documentation | 10 min |
-| **[PROJECT_OVERVIEW.md](adapt-scrollMarquee/PROJECT_OVERVIEW.md)** | Technical architecture | 12 min |
-| **[COMPONENT_SUMMARY.md](COMPONENT_SUMMARY.md)** | Package overview | 5 min |
-
-### Where to Start?
-
-- **New to this component?** → Start with **QUICK_START.md**
-- **Installing it?** → Follow **INSTALLATION.md**
-- **Want to customize?** → Read **README.md**
-- **Need technical details?** → Check **PROJECT_OVERVIEW.md**
-
-## ✨ Key Features
-
-- ✅ **Scroll-velocity animation** - Responds to scroll speed
-- ✅ **Infinite seamless loop** - No visible breaks
-- ✅ **Auto-loads GSAP** - No manual setup required
-- ✅ **Fully configurable** - Adjustable speed and styling
-- ✅ **Responsive design** - Works on all devices
-- ✅ **Accessible** - Screen reader compatible
-- ✅ **Production-ready** - Tested and documented
-
-## 🎨 Demo Preview
-
-The marquee creates a smooth, infinite scrolling effect where:
-1. Images scroll horizontally based on your scroll velocity
-2. Faster scrolling = faster marquee movement
-3. Seamless looping with no visible breaks
-4. Fully responsive and touch-friendly
-
-**See it in action**: Open `adapt-scrollMarquee/example/demo.html`
-
-## 📂 Project Structure
-
-```
-.
-├── adapt-scrollMarquee/              # Main component plugin
-│   ├── js/                           # JavaScript files
-│   │   ├── scrollMarquee.js          # Main component logic
-│   │   └── gsapLoader.js             # GSAP loader utility
-│   ├── templates/                    # React templates
-│   │   └── scrollMarquee.jsx         # Component template
-│   ├── less/                         # Styling
-│   │   └── scrollMarquee.less        # Component styles
-│   ├── properties-schema/            # Configuration schemas
-│   ├── example/                      # Examples
-│   │   └── demo.html                 # Standalone demo
-│   ├── README.md                     # Component documentation
-│   ├── INSTALLATION.md               # Installation guide
-│   ├── QUICK_START.md                # Quick start guide
-│   ├── PROJECT_OVERVIEW.md           # Technical details
-│   └── example.json                  # Example config
-│
-├── COMPONENT_SUMMARY.md              # Package summary
-└── README.md                         # This file
-```
-
-## 🔧 Configuration
-
-### Basic Setup
-
-```json
-{
-  "_component": "scrollMarquee",
-  "_layout": "full",
-  "_speed": 0.01,
-  "_items": [...]
-}
-```
-
-### Speed Options
-
-- `0.005` - Very slow, subtle
-- `0.01` - Default (recommended)
-- `0.02` - Fast and dramatic
-- `0.05` - Very fast
-
-### Customization
-
-```less
-// In your theme's custom.less
-.scroll-marquee__item-image img {
-  border-radius: 15px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-}
-```
-
-## 🎓 How It Works
-
-The component:
-
-1. **Loads GSAP** automatically if not already present
-2. **Duplicates items** for seamless infinite loop
-3. **Monitors scroll velocity** using ScrollTrigger
-4. **Updates position** based on scroll speed
-5. **Resets position** for continuous effect
-6. **Cleans up** properly when removed
-
-## 💻 Requirements
-
-- **Adapt Framework**: v5.0.0+
-- **GSAP**: v3.0.0+ (auto-loaded)
-- **Browser**: Modern browsers (Chrome, Firefox, Safari, Edge)
-
-## 🌐 Browser Support
-
-- ✅ Chrome 60+
-- ✅ Firefox 55+
-- ✅ Safari 12+
-- ✅ Edge 79+
-- ✅ iOS Safari 12+
-- ✅ Chrome Mobile
-- ⚠️ IE11 (limited support)
-
-## 📱 Mobile Support
-
-Fully responsive with:
-- Touch-optimized scrolling
-- Mobile-specific breakpoints
-- Optimized performance
-- Reduced image sizes on mobile
-
-## ♿ Accessibility
-
+**Scroll Marquee** includes the following accessibility features:
 - Alt text support for all images
 - Keyboard navigation compatible
 - Screen reader friendly
-- Respects `prefers-reduced-motion`
+- ARIA labels properly configured
 
-## 🐛 Troubleshooting
+## Limitations
 
-### Component not showing?
-```bash
-# Check if files copied correctly
-ls /path/to/course/src/components/adapt-scrollMarquee/
-```
+- Requires sufficient page height for scrolling to trigger the effect
+- Performance depends on image file sizes - optimize images (< 200KB recommended)
+- Best visual effect achieved with 5-10 images
+- The component automatically handles item duplication for seamless looping
 
-### Not animating?
-```javascript
-// In browser console
-console.log(window.gsap);  // Should show GSAP object
-```
+## Browser Support
 
-### Images not loading?
-```bash
-# Verify image paths
-ls course/en/images/
-```
+- Chrome 60+
+- Firefox 55+
+- Safari 12+
+- Edge 79+
+- iOS Safari 12+
+- Chrome Mobile
 
-For more help, see **[INSTALLATION.md](adapt-scrollMarquee/INSTALLATION.md#troubleshooting)**
+## Tips
 
-## 🎯 Use Cases
-
-Perfect for:
-- ✅ Logo showcases
-- ✅ Partner/sponsor displays
-- ✅ Image galleries
-- ✅ Product carousels
-- ✅ Award/certification displays
-- ✅ Timeline events
-- ✅ Portfolio showcases
-
-## 🔗 Links
-
-- **Original Effect**: [CodePen by ahoyhoy](https://codepen.io/ahoyhoy/pen/PwZrGpG)
-- **GSAP**: [GreenSock Animation Platform](https://greensock.com/gsap/)
-- **Adapt Learning**: [Adapt Framework](https://www.adaptlearning.org/)
-
-## 📊 Package Stats
-
-- **Total Files**: 18
-- **Total Size**: ~47 KB (excluding images)
-- **Documentation**: 5 comprehensive guides
-- **Lines of Code**: ~2,300
-- **Version**: 1.0.0
-
-## 🎉 What's Included
-
-### Code Files
-- ✅ Complete component implementation
-- ✅ GSAP auto-loader
-- ✅ React JSX templates
-- ✅ Responsive LESS styling
-- ✅ JSON schemas for configuration
-
-### Documentation
-- ✅ Quick start guide (5 min)
-- ✅ Installation guide (detailed)
-- ✅ Main README (complete)
-- ✅ Technical overview (architecture)
-- ✅ Package summary (this)
-
-### Examples
-- ✅ Working standalone demo
-- ✅ Example JSON configuration
-- ✅ Customization examples
-- ✅ Code snippets
-
-### Extras
-- ✅ Git repository initialized
-- ✅ License file (GPL-3.0)
-- ✅ Changelog
-- ✅ .gitignore
-
-## 🚀 Next Steps
-
-1. **Test the demo**: `adapt-scrollMarquee/example/demo.html`
-2. **Read the quick start**: `adapt-scrollMarquee/QUICK_START.md`
-3. **Install in your course**: Copy to components folder
-4. **Configure**: Add to your JSON
-5. **Customize**: Adjust speed and styling
-6. **Deploy**: Build and test
-
-## 📞 Getting Help
-
-1. Check **QUICK_START.md** for common issues
-2. Read **INSTALLATION.md** troubleshooting section
-3. Review **PROJECT_OVERVIEW.md** for technical details
-4. Test with **demo.html** to verify the effect works
-5. Check browser console for errors
-
-## 📝 License
-
-This project is licensed under GPL-3.0. See [LICENSE](adapt-scrollMarquee/LICENSE) for details.
-
-## 🙏 Credits
-
-- **Original Effect**: ahoyhoy (CodePen)
-- **GSAP**: GreenSock Animation Platform
-- **Adapt Framework**: Adapt Learning Community
-- **Implementation**: Custom development
-
-## ⭐ Features Highlight
-
-| Feature | Description | Status |
-|---------|-------------|--------|
-| Scroll Animation | Velocity-based movement | ✅ Complete |
-| Infinite Loop | Seamless repeating | ✅ Complete |
-| Auto GSAP Load | No manual setup | ✅ Complete |
-| Responsive | Mobile optimized | ✅ Complete |
-| Accessible | WCAG compliant | ✅ Complete |
-| Configurable | Easy customization | ✅ Complete |
-| Documented | 5 guide files | ✅ Complete |
-| Examples | Demo + configs | ✅ Complete |
+- **Image Size**: 300-500px wide works best
+- **Image Format**: JPG for photos, PNG for graphics with transparency
+- **Quantity**: 5-10 images provides optimal balance
+- **Speed**: Start with default `0.01` and adjust to taste
+- **Layout**: Use `"_layout": "full"` for maximum visual impact
+- **File Size**: Optimize images to < 200KB each for smooth performance
 
 ---
 
-## 🎊 Ready to Use!
-
-Everything you need is included. Start with the **[QUICK_START.md](adapt-scrollMarquee/QUICK_START.md)** guide!
-
-**Happy Learning! 🚀**
+**Author / maintainer:** fosterc1<br>
+**Accessibility support:** WAI AA<br>
+**RTL support:** Yes<br>
+**Cross-platform coverage:** Chrome, Chrome for Android, Firefox (ESR + latest version), Edge, Safari for macOS/iOS/iPadOS, Opera<br>
+**Version:** 1.1.0
