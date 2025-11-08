@@ -42,13 +42,13 @@
     &-attribution {
       margin-top: 0.5rem;
       font-size: 0.75rem;
-      color: @item-text-color-disabled;
+      color: #666;
       text-align: center;
     }
   }
 
   // Responsive adjustments
-  @media (max-width: @device-width-medium) {
+  @media (max-width: 900px) {
     &__inner {
       gap: 1.5rem;
     }
@@ -59,7 +59,7 @@
     }
   }
 
-  @media (max-width: @device-width-small) {
+  @media (max-width: 520px) {
     &__inner {
       gap: 1rem;
     }
@@ -68,5 +68,13 @@
       max-width: 150px;
       max-height: 100px;
     }
+  }
+  
+  // Placeholder styling
+  &__placeholder {
+    padding: 2rem;
+    text-align: center;
+    color: #999;
+    font-style: italic;
   }
 }
