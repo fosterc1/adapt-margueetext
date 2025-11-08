@@ -24,11 +24,12 @@ class ScrollMarqueeView extends ComponentView {
       <div class="component__inner scroll-marquee__inner">
         <div class="component__header">
           ${data.displayTitle ? `<div class="component__title">${data.displayTitle}</div>` : ''}
-          ${data.body ? `<div class="component__body">${data.body}</div>` : ''}
           ${data.instruction ? `<div class="component__instruction">${data.instruction}</div>` : ''}
         </div>
         <div class="component__widget scroll-marquee__widget">
-          <p>ScrollMarquee component is working! Add items to see the marquee.</p>
+          <div class="scroll-marquee__inner">
+            ${data.body ? `<div class="scroll-marquee__text">${data.body}</div>` : ''}
+          </div>
         </div>
       </div>
     `;
