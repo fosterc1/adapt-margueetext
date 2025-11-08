@@ -61,7 +61,9 @@ class ScrollMarquee extends ComponentView {
     items.forEach(el => marqueeInner.appendChild(el.cloneNode(true)));
 
     let xPos = 0;
-    const speed = this.model.get('_speed') || 0.01;
+    // Convert user-friendly speed (1-5) to actual multiplier
+    const userSpeed = this.model.get('_speed') || 1;
+    const speedMultiplier = userSpeed * 0.01; // 1=0.01, 2=0.02, 3=0.03, etc.
 
     ScrollTrigger.create({
       trigger: this.el,
@@ -70,7 +72,7 @@ class ScrollMarquee extends ComponentView {
       scrub: true,
       onUpdate: (self) => {
         // Adjust speed based on scroll velocity
-        const scrollSpeed = self.getVelocity() * speed;
+        const scrollSpeed = self.getVelocity() * speedMultiplier;
 
         xPos -= scrollSpeed;
 

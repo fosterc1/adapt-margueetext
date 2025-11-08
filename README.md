@@ -30,11 +30,12 @@ This optional text appears above the component. It is frequently used to guide t
 Determines when Adapt will register this component as having been completed by the learner. Acceptable values are `"inview"` and `"manual"`. The default is `"inview"`.
 
 ### \_speed (number):
-Controls the speed multiplier for the marquee animation relative to scroll velocity. Higher values result in faster movement. The default is `0.01`. Acceptable range is `0.001` to `0.1`.
-- `0.005` - Very slow, subtle movement
-- `0.01` - Default, balanced (recommended)
-- `0.02` - Fast, dramatic effect
-- `0.05` - Very fast movement
+Controls the scroll speed of the marquee. Higher values result in faster movement. The default is `1`. Acceptable range is `1` to `5`.
+- `1` - Slow (recommended starting point)
+- `2` - Medium
+- `3` - Fast
+- `4` - Very fast
+- `5` - Maximum speed
 
 ### \_items (array):
 The items array contains the list of all the images to display in the marquee. Each entry in the array should be an object, containing the following settings:
@@ -100,7 +101,7 @@ If you prefer to include GSAP manually, add to your course's `src/core/index.htm
 - **Image Size**: 300-500px wide works best
 - **Image Format**: JPG for photos, PNG for graphics with transparency
 - **Quantity**: 5-10 images provides optimal balance
-- **Speed**: Start with default `0.01` and adjust to taste
+- **Speed**: Start with `1` (slow) and increase as needed
 - **Layout**: Use `"_layout": "full"` for maximum visual impact
 - **File Size**: Optimize images to < 200KB each for smooth performance
 

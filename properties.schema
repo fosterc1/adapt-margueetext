@@ -46,11 +46,11 @@
     "_speed": {
       "type": "number",
       "required": false,
-      "default": 0.01,
-      "title": "Scroll Speed Multiplier",
+      "default": 1,
+      "title": "Scroll Speed",
       "inputType": "Number",
       "validators": ["number"],
-      "help": "Controls the speed of the marquee relative to scroll velocity. Higher values = faster movement. Range: 0.001 to 0.1"
+      "help": "Controls the speed of the marquee. 1 = Slow, 2 = Medium, 3 = Fast. Range: 1 to 5"
     },
     "_items": {
       "type": "array",

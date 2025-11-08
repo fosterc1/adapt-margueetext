@@ -9,7 +9,7 @@
   "displayTitle": "Scroll-Based Marquee",
   "body": "Scroll down to see the marquee move based on your scroll speed. The faster you scroll, the faster the images move.",
   "instruction": "",
-  "_speed": 0.01,
+  "_speed": 1,
   "_setCompletionOn": "inview",
   "_items": [
     {
