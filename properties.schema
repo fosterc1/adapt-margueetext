@@ -7,7 +7,7 @@
     "ariaRegion": {
       "type": "string",
       "required": true,
-      "default": "Scroll-based marquee. Images move based on your scroll speed.",
+      "default": "Scrolling marquee text. Images move based on your scroll speed.",
       "inputType": "Text",
       "validators": [],
       "translatable": true

@@ -1,6 +1,6 @@
 # adapt-scrollMarquee
 
-**Scroll Marquee** is a _presentation component_ which displays a horizontal scrolling marquee of images that responds to scroll velocity.
+**Scrolling Marquee Text** is a _presentation component_ which displays a horizontal scrolling marquee of images that responds to scroll velocity.
 
 The marquee speed is controlled by the user's scroll speed - the faster you scroll, the faster the images move. The component creates an infinite seamless loop using GSAP ScrollTrigger.
 
@@ -8,7 +8,7 @@ The marquee speed is controlled by the user's scroll speed - the faster you scro
 
 ## Settings Overview
 
-The attributes listed below are used in _components.json_ to configure **Scroll Marquee**, and are properly formatted as JSON in [_example.json_](https://github.com/fosterc1/adapt-margueetext/blob/main/example.json).
+The attributes listed below are used in _components.json_ to configure **Scrolling Marquee Text**, and are properly formatted as JSON in [_example.json_](https://github.com/fosterc1/adapt-margueetext/blob/main/example.json).
 
 ## Attributes
 
