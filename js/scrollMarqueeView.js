@@ -136,11 +136,12 @@ class ScrollMarqueeView extends ComponentView {
     const userSpeed = this.model.get('_speed') || 1;
     const speedMultiplier = userSpeed * 0.01; // 1=0.01, 2=0.02, 3=0.03, etc.
 
-    ScrollTrigger.create({
+    this.scrollTrigger = ScrollTrigger.create({
       trigger: this.el,
       start: 'top bottom',
       end: 'bottom top',
       scrub: true,
+      invalidateOnRefresh: true,
       onUpdate: (self) => {
         // Adjust speed based on scroll velocity
         const scrollSpeed = self.getVelocity() * speedMultiplier;
@@ -157,7 +158,9 @@ class ScrollMarqueeView extends ComponentView {
       }
     });
 
-    this.scrollTrigger = ScrollTrigger.getAll().find(st => st.trigger === this.el);
+    // Force refresh after setup to ensure proper initialization
+    // This fixes the issue where component is already visible on page load
+    ScrollTrigger.refresh();
   }
 
   onInview() {
