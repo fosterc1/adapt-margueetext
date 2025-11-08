@@ -26,21 +26,28 @@ class GsapLoader {
     this.loadPromise = new Promise((resolve, reject) => {
       const loadScript = (src, description) => {
         return new Promise((resolve, reject) => {
+          console.log(`ScrollMarquee: Attempting to load ${description} from ${src}`);
+          
           // Check if already in document
-          const existing = document.querySelector(`script[src*="${src.split('/').pop()}"]`);
+          const filename = src.split('/').pop().split('?')[0];
+          const existing = document.querySelector(`script[src*="${filename}"]`);
           if (existing) {
+            console.log(`ScrollMarquee: ${description} already in document`);
             resolve();
             return;
           }
 
           const script = document.createElement('script');
           script.src = src;
-          script.async = true;
+          script.async = false; // Load synchronously for proper sequencing
           script.onload = () => {
-            console.log(`ScrollMarquee: Loaded ${description} from ${src}`);
+            console.log(`ScrollMarquee: Successfully loaded ${description}`);
             resolve();
           };
-          script.onerror = () => reject(new Error(`Failed to load ${description} from ${src}`));
+          script.onerror = (error) => {
+            console.log(`ScrollMarquee: Failed to load ${description} - ${error}`);
+            reject(new Error(`Failed to load ${description} from ${src}`));
+          };
           document.head.appendChild(script);
         });
       };
@@ -65,48 +72,16 @@ class GsapLoader {
         });
       };
 
-      // Try loading sequence: bundled first, then CDN
+      // For now, just use CDN directly since bundled paths are complex
+      // We can add bundled support later once we know the correct path structure
       const tryLoadGsap = () => {
-        // Priority 2: Try bundled version from plugin
-        console.log('ScrollMarquee: Trying bundled GSAP...');
-        // Try multiple possible paths where the plugin might be installed
-        const bundledPaths = [
-          'adapt/js/components/adapt-scrollMarquee/libraries/gsap.min.js',
-          'components/adapt-scrollMarquee/libraries/gsap.min.js',
-          '../components/adapt-scrollMarquee/libraries/gsap.min.js'
-        ];
-        
-        let attempts = Promise.reject();
-        bundledPaths.forEach(path => {
-          attempts = attempts.catch(() => loadScript(path, 'GSAP (bundled)'));
-        });
-        
-        return attempts.catch(() => {
-          // Priority 3: Fall back to CDN (using cdnjs which properly attaches to window)
-          console.log('ScrollMarquee: Bundled GSAP not found, using CDN...');
-          return loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js', 'GSAP (CDN)');
-        });
+        console.log('ScrollMarquee: Loading GSAP from CDN...');
+        return loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js', 'GSAP (CDN)');
       };
 
       const tryLoadScrollTrigger = () => {
-        // Priority 2: Try bundled version from plugin
-        console.log('ScrollMarquee: Trying bundled ScrollTrigger...');
-        const bundledPaths = [
-          'adapt/js/components/adapt-scrollMarquee/libraries/ScrollTrigger.min.js',
-          'components/adapt-scrollMarquee/libraries/ScrollTrigger.min.js',
-          '../components/adapt-scrollMarquee/libraries/ScrollTrigger.min.js'
-        ];
-        
-        let attempts = Promise.reject();
-        bundledPaths.forEach(path => {
-          attempts = attempts.catch(() => loadScript(path, 'ScrollTrigger (bundled)'));
-        });
-        
-        return attempts.catch(() => {
-          // Priority 3: Fall back to CDN
-          console.log('ScrollMarquee: Bundled ScrollTrigger not found, using CDN...');
-          return loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js', 'ScrollTrigger (CDN)');
-        });
+        console.log('ScrollMarquee: Loading ScrollTrigger from CDN...');
+        return loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js', 'ScrollTrigger (CDN)');
       };
 
       // Load GSAP first, then ScrollTrigger
