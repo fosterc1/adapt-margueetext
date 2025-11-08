@@ -14,42 +14,42 @@
   "_items": [
     {
       "_graphic": {
-        "src": "course/en/images/marquee-image-1.jpg"
+        "src": "course/en/images/marquee-image-1.jpg",
+        "alt": "Image 1",
+        "attribution": ""
       },
-      "alt": "Image 1",
-      "attribution": "",
       "_classes": ""
     },
     {
       "_graphic": {
-        "src": "course/en/images/marquee-image-2.jpg"
+        "src": "course/en/images/marquee-image-2.jpg",
+        "alt": "Image 2",
+        "attribution": ""
       },
-      "alt": "Image 2",
-      "attribution": "",
       "_classes": ""
     },
     {
       "_graphic": {
-        "src": "course/en/images/marquee-image-3.jpg"
+        "src": "course/en/images/marquee-image-3.jpg",
+        "alt": "Image 3",
+        "attribution": ""
       },
-      "alt": "Image 3",
-      "attribution": "",
       "_classes": ""
     },
     {
       "_graphic": {
-        "src": "course/en/images/marquee-image-4.jpg"
+        "src": "course/en/images/marquee-image-4.jpg",
+        "alt": "Image 4",
+        "attribution": ""
       },
-      "alt": "Image 4",
-      "attribution": "",
       "_classes": ""
     },
     {
       "_graphic": {
-        "src": "course/en/images/marquee-image-5.jpg"
+        "src": "course/en/images/marquee-image-5.jpg",
+        "alt": "Image 5",
+        "attribution": ""
       },
-      "alt": "Image 5",
-      "attribution": "",
       "_classes": ""
     }
   ]

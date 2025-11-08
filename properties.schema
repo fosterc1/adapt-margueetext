@@ -2,100 +2,105 @@
   "type": "object",
   "$schema": "http://json-schema.org/draft-04/schema",
   "id": "http://jsonschema.net",
-  "required": false,
-  "globals": {},
-  "properties": {
-    "pluginLocations": {
-      "type": "object",
+  "$ref": "http://localhost/plugins/content/component/model.schema",
+  "globals": {
+    "ariaRegion": {
+      "type": "string",
       "required": true,
-      "properties": {
-        "config": {
-          "type": "object"
-        },
-        "course": {
-          "type": "object"
-        },
-        "contentobject": {
-          "type": "object"
-        },
-        "article": {
-          "type": "object"
-        },
-        "block": {
-          "type": "object"
-        },
-        "component": {
-          "type": "object",
-          "properties": {
-            "scrollMarquee": {
-              "type": "object",
-              "properties": {
-                "_speed": {
-                  "type": "number",
-                  "required": false,
-                  "default": 0.01,
-                  "title": "Scroll Speed Multiplier",
-                  "inputType": "Number",
-                  "validators": ["number"],
-                  "help": "Controls the speed of the marquee relative to scroll velocity. Higher values = faster movement."
-                },
-                "_items": {
-                  "type": "array",
-                  "required": true,
-                  "title": "Marquee Items",
-                  "items": {
-                    "type": "object",
-                    "required": false,
-                    "properties": {
-                      "_graphic": {
-                        "type": "object",
-                        "required": true,
-                        "title": "Graphic",
-                        "properties": {
-                          "src": {
-                            "type": "string",
-                            "required": true,
-                            "default": "",
-                            "inputType": "Asset:image",
-                            "validators": ["required"],
-                            "help": "Image to display in the marquee"
-                          }
-                        }
-                      },
-                      "alt": {
-                        "type": "string",
-                        "required": false,
-                        "default": "",
-                        "title": "Alternative Text",
-                        "inputType": "Text",
-                        "validators": [],
-                        "help": "A description of the image for accessibility",
-                        "translatable": true
-                      },
-                      "attribution": {
-                        "type": "string",
-                        "required": false,
-                        "default": "",
-                        "title": "Attribution",
-                        "inputType": "Text",
-                        "validators": [],
-                        "help": "Text to be displayed as attribution for the image",
-                        "translatable": true
-                      },
-                      "_classes": {
-                        "type": "string",
-                        "required": false,
-                        "default": "",
-                        "title": "Custom Classes",
-                        "inputType": "Text",
-                        "validators": [],
-                        "help": "Custom CSS classes to apply to this item"
-                      }
-                    }
-                  }
-                }
+      "default": "Scroll-based marquee. Images move based on your scroll speed.",
+      "inputType": "Text",
+      "validators": [],
+      "translatable": true
+    }
+  },
+  "properties": {
+    "_supportedLayout": {
+      "type": "string",
+      "required": true,
+      "enum": ["full-width", "half-width", "both"],
+      "default": "full-width",
+      "editorOnly": true
+    },
+    "instruction": {
+      "type": "string",
+      "required": false,
+      "default": "",
+      "inputType": "Text",
+      "validators": [],
+      "help": "Instruction text for the component",
+      "translatable": true
+    },
+    "_setCompletionOn": {
+      "type": "string",
+      "required": false,
+      "default": "inview",
+      "title": "Set completion on:",
+      "enum": ["inview", "manual"],
+      "inputType": {
+        "type": "Select",
+        "options": ["inview", "manual"]
+      },
+      "validators": [],
+      "help": "Whether completion is based on the component entering the viewport"
+    },
+    "_speed": {
+      "type": "number",
+      "required": false,
+      "default": 0.01,
+      "title": "Scroll Speed Multiplier",
+      "inputType": "Number",
+      "validators": ["number"],
+      "help": "Controls the speed of the marquee relative to scroll velocity. Higher values = faster movement. Range: 0.001 to 0.1"
+    },
+    "_items": {
+      "type": "array",
+      "required": true,
+      "title": "Marquee Items",
+      "items": {
+        "type": "object",
+        "required": true,
+        "properties": {
+          "_graphic": {
+            "type": "object",
+            "required": false,
+            "title": "Graphic",
+            "properties": {
+              "src": {
+                "type": "string",
+                "required": false,
+                "default": "",
+                "inputType": "Asset:image",
+                "validators": [],
+                "help": "Image to display in the marquee"
+              },
+              "alt": {
+                "type": "string",
+                "required": false,
+                "default": "",
+                "inputType": "Text",
+                "validators": [],
+                "help": "A description of the image for accessibility",
+                "translatable": true
+              },
+              "attribution": {
+                "type": "string",
+                "required": false,
+                "default": "",
+                "inputType": "Text",
+                "validators": [],
+                "help": "Text to be displayed as attribution for the image",
+                "translatable": true
               }
             }
+          },
+          "_classes": {
+            "type": "string",
+            "required": false,
+            "default": "",
+            "title": "Custom Classes",
+            "inputType": "Text",
+            "validators": [],
+            "help": "Custom CSS classes to apply to this item"
           }
         }
       }
