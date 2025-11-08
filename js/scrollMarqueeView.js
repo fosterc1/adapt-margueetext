@@ -131,54 +131,37 @@ class ScrollMarqueeView extends ComponentView {
       marqueeInner.appendChild(firstItem.cloneNode(true));
     }
 
-    // Get the total width to animate (half of total width for seamless loop)
-    const totalWidth = marqueeInner.offsetWidth;
-    const animationDistance = totalWidth / 2;
-    
-    // Convert user-friendly speed (1-5) to base duration
+    let xPos = 0;
+    // Convert user-friendly speed (1-5) to actual multiplier
     const userSpeed = this.model.get('_speed') || 1;
-    const baseDuration = 30 / userSpeed; // Lower speed = longer duration
-    
-    // Create a continuous base animation and store reference
-    this.baseAnimation = gsap.to(marqueeInner, {
-      x: -animationDistance,
-      duration: baseDuration,
-      ease: 'none',
-      repeat: -1,
-      modifiers: {
-        x: gsap.utils.unitize(x => parseFloat(x) % animationDistance)
-      }
-    });
+    const speedMultiplier = userSpeed * 0.01; // 1=0.01, 2=0.02, 3=0.03, etc.
 
-    // Create ScrollTrigger to modify animation speed based on scroll velocity
     this.scrollTrigger = ScrollTrigger.create({
       trigger: this.el,
       start: 'top bottom',
       end: 'bottom top',
+      scrub: 0.5, // Smoother scrubbing with slight delay
       invalidateOnRefresh: true,
       onUpdate: (self) => {
-        // Get scroll velocity (negative = scrolling down)
-        const velocity = self.getVelocity();
+        // Only animate based on scroll velocity
+        const scrollSpeed = self.getVelocity() * speedMultiplier;
+
+        xPos -= scrollSpeed;
+
+        // Reset position to prevent large numbers and create seamless loop
+        const marqueeWidth = marqueeInner.offsetWidth;
+        const loopPoint = marqueeWidth / 2;
         
-        // Convert velocity to time scale factor
-        // Faster scroll = faster animation
-        const velocityFactor = velocity / 1000;
-        const timeScale = 1 + Math.abs(velocityFactor) * (userSpeed * 0.5);
-        
-        // Apply the time scale to the base animation
-        gsap.to(this.baseAnimation, {
-          timeScale: timeScale,
-          duration: 0.3,
-          overwrite: true
+        if (xPos <= -loopPoint) xPos = 0;
+        if (xPos >= 0) xPos = -loopPoint;
+
+        gsap.set(marqueeInner, {
+          x: xPos
         });
       },
-      onLeave: () => {
-        // Reset to normal speed when leaving viewport
-        gsap.to(this.baseAnimation, { timeScale: 1, duration: 0.5 });
-      },
-      onEnterBack: () => {
-        // Reset to normal speed when entering from bottom
-        gsap.to(this.baseAnimation, { timeScale: 1, duration: 0.5 });
+      onRefresh: () => {
+        // Reset position when ScrollTrigger refreshes
+        console.log('ScrollMarquee: ScrollTrigger refreshed');
       }
     });
   }
@@ -196,9 +179,6 @@ class ScrollMarqueeView extends ComponentView {
   remove() {
     if (this.scrollTrigger) {
       this.scrollTrigger.kill();
-    }
-    if (this.baseAnimation) {
-      this.baseAnimation.kill();
     }
     super.remove();
   }
