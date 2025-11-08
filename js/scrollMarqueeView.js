@@ -11,7 +11,7 @@ class ScrollMarqueeView extends ComponentView {
     ].join(' ');
   }
 
-  async render() {
+  render() {
     // Call preRender lifecycle
     if (this.preRender) {
       this.preRender();
@@ -36,10 +36,12 @@ class ScrollMarqueeView extends ComponentView {
     this.$el.html(html);
     this.$el.addClass(this.className());
     
-    // Call postRender lifecycle
-    if (this.postRender) {
-      await this.postRender();
-    }
+    // Call postRender in nextTick to avoid blocking
+    setTimeout(() => {
+      if (this.postRender) {
+        this.postRender();
+      }
+    }, 0);
     
     return this;
   }
@@ -50,14 +52,23 @@ class ScrollMarqueeView extends ComponentView {
 
   postRender() {
     console.log('ScrollMarquee: postRender called');
+    
+    // Set ready immediately - don't wait for GSAP
     this.setReadyStatus();
     
     if (this.model.get('_setCompletionOn') === 'inview') {
       this.setupInviewCompletion('.component__widget', this.onInview.bind(this));
     }
 
-    // Load GSAP asynchronously - component still displays without it
-    console.log('ScrollMarquee: Loading GSAP...');
+    // Check if GSAP is already available (user might have included it)
+    if (window.gsap && window.ScrollTrigger) {
+      console.log('ScrollMarquee: GSAP already available, setting up marquee');
+      this.setupMarquee();
+      return;
+    }
+
+    // Load GSAP asynchronously - component already ready
+    console.log('ScrollMarquee: Loading GSAP from CDN...');
     gsapLoader.load()
       .then(() => {
         console.log('ScrollMarquee: GSAP loaded, setting up marquee');
@@ -65,7 +76,7 @@ class ScrollMarqueeView extends ComponentView {
       })
       .catch((error) => {
         console.warn('ScrollMarquee: Animation disabled - GSAP failed to load', error);
-        // Component still displays, just without scroll animation
+        // Component still displays and works, just without scroll animation
       });
   }
 

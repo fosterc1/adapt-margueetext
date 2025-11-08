@@ -51,7 +51,7 @@ class GsapLoader {
             } else {
               reject(new Error('GSAP loaded but not available on window'));
             }
-          }, 100);
+          }, 500);
         })
         .catch((error) => {
           console.error('Failed to load GSAP libraries:', error);
