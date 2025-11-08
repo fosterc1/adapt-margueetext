@@ -6,6 +6,16 @@ The marquee speed is controlled by the user's scroll speed - the faster you scro
 
 [**View the demo**](example/demo.html)
 
+## GSAP Library
+
+This component uses **GSAP (GreenSock Animation Platform)** v3.12.5 for smooth scroll-based animations. The component uses a smart loading strategy:
+
+1. **Theme/Framework GSAP** - If your Adapt theme or framework already includes GSAP, it will use that version
+2. **Bundled Version** - GSAP libraries are bundled with this plugin (in `libraries/` folder)
+3. **CDN Fallback** - If bundled files aren't accessible, loads from jsDelivr CDN
+
+This ensures the component works reliably in any Adapt installation without manual GSAP configuration.
+
 ## Settings Overview
 
 The attributes listed below are used in _components.json_ to configure **Scrolling Marquee Text**, and are properly formatted as JSON in [_example.json_](https://github.com/fosterc1/adapt-margueetext/blob/main/example.json).
