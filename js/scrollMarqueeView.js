@@ -132,7 +132,9 @@ class ScrollMarqueeView extends ComponentView {
     }
 
     let xPos = 0;
-    let lastScrollY = window.pageYOffset || document.documentElement.scrollTop;
+    // Support multiple scroll position methods for cross-browser compatibility
+    const getScrollY = () => window.pageYOffset || window.scrollY || document.documentElement.scrollTop || 0;
+    let lastScrollY = getScrollY();
     
     // Convert user-friendly speed (1-5) to actual multiplier
     const userSpeed = this.model.get('_speed') || 1;
@@ -147,11 +149,11 @@ class ScrollMarqueeView extends ComponentView {
       // Check if ScrollTrigger is active (component in viewport)
       if (!this.scrollTrigger || !this.scrollTrigger.isActive) {
         // Update lastScrollY even when not active to prevent jumps
-        lastScrollY = window.pageYOffset || document.documentElement.scrollTop;
+        lastScrollY = getScrollY();
         return;
       }
       
-      const currentScrollY = window.pageYOffset || document.documentElement.scrollTop;
+      const currentScrollY = getScrollY();
       const scrollDelta = currentScrollY - lastScrollY;
       lastScrollY = currentScrollY;
       
@@ -182,6 +184,23 @@ class ScrollMarqueeView extends ComponentView {
     
     // Store handler reference for cleanup
     this.scrollHandler = handleScroll;
+    
+    // Handle window resize for responsive layouts
+    const handleResize = () => {
+      // Recalculate if viewport width changed significantly
+      const newViewportWidth = window.innerWidth;
+      const widthDiff = Math.abs(newViewportWidth - viewportWidth);
+      
+      // Only recalculate if width changed by more than 100px (avoid minor adjustments)
+      if (widthDiff > 100) {
+        console.log('ScrollMarquee: Viewport width changed significantly, refreshing');
+        // Refresh ScrollTrigger to recalculate positions
+        ScrollTrigger.refresh();
+      }
+    };
+    
+    window.addEventListener('resize', handleResize, { passive: true });
+    this.resizeHandler = handleResize;
   }
 
   onInview() {
@@ -200,6 +219,9 @@ class ScrollMarqueeView extends ComponentView {
     }
     if (this.scrollHandler) {
       window.removeEventListener('scroll', this.scrollHandler);
+    }
+    if (this.resizeHandler) {
+      window.removeEventListener('resize', this.resizeHandler);
     }
     super.remove();
   }
