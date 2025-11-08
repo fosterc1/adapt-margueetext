@@ -26,10 +26,18 @@ class ScrollMarqueeView extends ComponentView {
     
     console.log('ScrollMarquee: Rendering with body text:', bodyText.substring(0, 50) + '...');
     
+    // Get aria label from globals or use default
+    const ariaLabel = data._globals && data._globals.ariaRegion 
+      ? data._globals.ariaRegion 
+      : 'Scrolling marquee text that moves based on your scroll speed.';
+    
     const html = `
       <div class="component__inner scroll-marquee__inner-wrapper">
-        <div class="component__widget scroll-marquee__widget">
-          <div class="scroll-marquee__inner">
+        <div class="component__widget scroll-marquee__widget" 
+             role="region" 
+             aria-label="${ariaLabel}"
+             aria-live="polite">
+          <div class="scroll-marquee__inner" aria-hidden="false">
             ${singleItem}
           </div>
         </div>
@@ -38,6 +46,12 @@ class ScrollMarqueeView extends ComponentView {
     
     this.$el.html(html);
     this.$el.addClass(this.className());
+    
+    // Add accessible text for screen readers (non-moving version)
+    if (bodyText) {
+      const srOnly = `<div class="scroll-marquee__sr-only" aria-hidden="false">${bodyText}</div>`;
+      this.$('.component__widget').append(srOnly);
+    }
     
     // Call postRender in nextTick to avoid blocking
     setTimeout(() => {
@@ -89,6 +103,20 @@ class ScrollMarqueeView extends ComponentView {
 
     if (!gsap || !ScrollTrigger) {
       console.warn('ScrollMarquee: GSAP or ScrollTrigger not found. Please include GSAP library.');
+      return;
+    }
+
+    // Check for manual animation disable or prefers-reduced-motion
+    const manualDisable = this.model.get('_disableAnimation');
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    
+    if (manualDisable || prefersReducedMotion) {
+      const reason = manualDisable ? 'manually disabled' : 'reduced motion preference detected';
+      console.log(`ScrollMarquee: Animation ${reason} - displaying static content`);
+      // Add class to indicate reduced motion mode
+      this.$el.addClass('scroll-marquee--reduced-motion');
+      // Make marquee content static and accessible
+      this.$('.scroll-marquee__inner').attr('aria-hidden', 'false');
       return;
     }
 

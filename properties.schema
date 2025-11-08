@@ -42,6 +42,15 @@
       "inputType": "Number",
       "validators": ["number"],
       "help": "Controls the speed of the marquee. 1 = Slow, 2 = Medium, 3 = Fast. Range: 1 to 5"
+    },
+    "_disableAnimation": {
+      "type": "boolean",
+      "required": false,
+      "default": false,
+      "title": "Disable Animation",
+      "inputType": "Checkbox",
+      "validators": [],
+      "help": "Disable the scrolling animation for accessibility purposes. Text will be displayed statically."
     }
   }
 }
