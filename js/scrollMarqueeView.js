@@ -102,11 +102,15 @@ class ScrollMarqueeView extends ComponentView {
       return;
     }
 
+    console.log('ScrollMarquee: marqueeInner children count:', marqueeInner.children.length);
+    console.log('ScrollMarquee: marqueeInner innerHTML:', marqueeInner.innerHTML);
+
     const firstItem = marqueeInner.children[0];
     
     // Only setup marquee if there is content
     if (!firstItem) {
-      console.warn('ScrollMarquee: No items to display');
+      console.warn('ScrollMarquee: No items to display - marqueeInner has no children');
+      console.warn('ScrollMarquee: Body content was:', this.model.get('body'));
       return;
     }
     
