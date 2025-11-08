@@ -57,6 +57,15 @@ Controls the sensitivity/multiplier for scroll-based movement. Higher values mak
 
 The marquee only moves when the user scrolls the page. Higher `_speed` values amplify the scroll-velocity effect.
 
+### \_disableAnimation (boolean):
+Manually disable the scrolling animation for accessibility purposes. When set to `true`, the text will be displayed statically without any movement. This is useful for:
+- Users who are sensitive to motion
+- Courses that need to meet strict accessibility requirements
+- Content that must be readable without animation
+- Testing purposes
+
+The default is `false`. When enabled, or when the user's system has `prefers-reduced-motion` enabled, the marquee will display only the first text item in a centered, static position.
+
 ## How It Works
 
 The component uses **scroll-velocity-based animation**:
@@ -91,11 +100,41 @@ If you prefer to include GSAP manually, add to your course's `src/core/index.htm
 
 ## Accessibility
 
-**Scroll Marquee** includes the following accessibility features:
-- Keyboard navigation compatible
-- Screen reader friendly
-- ARIA labels properly configured
-- Text-based content is fully accessible
+**Scroll Marquee** includes comprehensive accessibility features following WCAG 2.1 AA guidelines:
+
+### Screen Reader Support
+- **ARIA Labels**: Proper `role="region"` and `aria-label` attributes
+- **Live Regions**: `aria-live="polite"` for dynamic content announcements
+- **Static Text Version**: Hidden non-moving text version for screen readers
+- **Semantic HTML**: Proper markup structure for assistive technologies
+
+### Motion & Animation
+- **Reduced Motion Support**: Automatically detects `prefers-reduced-motion` system setting
+- **Manual Disable Option**: `_disableAnimation` property to disable animation
+- **Static Fallback**: Text displays statically when animation is disabled
+- **No Flashing**: Smooth, non-jarring animations that don't trigger seizures
+
+### User Control
+- **`_disableAnimation` (boolean)**: Manually disable scrolling animation for accessibility
+  - Set to `true` to display text statically
+  - Respects user preference for reduced motion
+  - Ensures content is readable without movement
+
+### Keyboard & Focus
+- **Keyboard navigation compatible**: Standard tab navigation works
+- **Focus management**: Proper focus handling for interactive elements
+- **No keyboard traps**: Users can navigate away easily
+
+### Visual Accessibility
+- **High contrast compatible**: Works with high contrast modes
+- **Responsive text sizing**: Adapts to user's font size preferences
+- **Clear visual hierarchy**: Proper spacing and layout
+
+### Compatibility
+- **JAWS**: Fully compatible
+- **NVDA**: Fully compatible  
+- **VoiceOver**: iOS and macOS compatible
+- **TalkBack**: Android compatible
 
 ## Limitations
 
@@ -129,4 +168,4 @@ If you prefer to include GSAP manually, add to your course's `src/core/index.htm
 **Accessibility support:** WAI AA<br>
 **RTL support:** Yes<br>
 **Cross-platform coverage:** Chrome, Chrome for Android, Firefox (ESR + latest version), Edge, Safari for macOS/iOS/iPadOS, Opera<br>
-**Version:** 3.10.0
+**Version:** 3.11.0
