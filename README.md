@@ -1,8 +1,8 @@
 # adapt-scrollMarquee
 
-**Scrolling Marquee Text** is a _presentation component_ which displays a horizontal scrolling marquee of images that responds to scroll velocity.
+**Scrolling Marquee Text** is a _presentation component_ which displays a horizontal scrolling marquee of text that responds to scroll velocity.
 
-The marquee speed is controlled by the user's scroll speed - the faster you scroll, the faster the images move. The component creates an infinite seamless loop using GSAP ScrollTrigger.
+The marquee speed is controlled by the user's scroll speed - the faster you scroll, the faster the text moves. The component creates an infinite seamless loop using GSAP ScrollTrigger.
 
 [**View the demo**](example/demo.html)
 
@@ -33,8 +33,14 @@ CSS class name(s) to be applied to this component's containing `div`. The class(
 ### \_layout (string):
 Defines the horizontal position of the component in the block. Acceptable values are `"full"`, `"left"` or `"right"`. For best visual effect, `"full"` is recommended.
 
-### instruction (string):
-This optional text appears above the component. It is frequently used to guide the learner's interaction with the component.
+### body (string):
+The text to display in the scrolling marquee. This is the standard body field from Adapt's core component model. The text will be repeated multiple times to create a seamless infinite loop effect.
+
+**Tips for body text:**
+- Keep text concise and readable at a glance
+- Use bullet separators (•) if you want to display multiple phrases: `"Welcome • Explore • Discover"`
+- HTML is supported: `"<strong>Bold text</strong> • <em>Italic text</em>"`
+- Text will automatically duplicate to fill the viewport width
 
 ### \_setCompletionOn (string):
 Determines when Adapt will register this component as having been completed by the learner. Acceptable values are `"inview"` and `"manual"`. The default is `"inview"`.
@@ -46,24 +52,6 @@ Controls the scroll speed of the marquee. Higher values result in faster movemen
 - `3` - Fast
 - `4` - Very fast
 - `5` - Maximum speed
-
-### \_items (array):
-The items array contains the list of all the images to display in the marquee. Each entry in the array should be an object, containing the following settings:
-
-#### \_graphic (object):
-The graphic object defines the image that displays in the marquee and contains the following settings:
-
-##### src (string):
-File name (including path) of the image. Path should be relative to the `src` folder (e.g., `"course/en/images/marquee-1.jpg"`).
-
-#### alt (string):
-The alternative text for the image. Assign [alt text](https://github.com/adaptlearning/adapt_framework/wiki/Providing-good-alt-text) to images that convey course content only.
-
-#### attribution (string):
-Optional text to be displayed as an [attribution](https://wiki.creativecommons.org/Best_practices_for_attribution). By default it is displayed below the image. Text can contain HTML tags.
-
-#### \_classes (string):
-CSS class name(s) to be applied to this specific marquee item. Separate multiple classes with a space.
 
 ## Dependencies
 
@@ -85,17 +73,17 @@ If you prefer to include GSAP manually, add to your course's `src/core/index.htm
 ## Accessibility
 
 **Scroll Marquee** includes the following accessibility features:
-- Alt text support for all images
 - Keyboard navigation compatible
 - Screen reader friendly
 - ARIA labels properly configured
+- Text-based content is fully accessible
 
 ## Limitations
 
 - Requires sufficient page height for scrolling to trigger the effect
-- Performance depends on image file sizes - optimize images (< 200KB recommended)
-- Best visual effect achieved with 5-10 images
-- The component automatically handles item duplication for seamless looping
+- Moving text may be difficult to read for some users
+- The component automatically handles text duplication for seamless looping
+- Not recommended for critical instructional content due to animation
 
 ## Browser Support
 
@@ -108,12 +96,12 @@ If you prefer to include GSAP manually, add to your course's `src/core/index.htm
 
 ## Tips
 
-- **Image Size**: 300-500px wide works best
-- **Image Format**: JPG for photos, PNG for graphics with transparency
-- **Quantity**: 5-10 images provides optimal balance
+- **Text Length**: Keep it concise - 3-6 short phrases works best
+- **Separators**: Use bullet points (•) to separate phrases for visual clarity
 - **Speed**: Start with `1` (slow) and increase as needed
 - **Layout**: Use `"_layout": "full"` for maximum visual impact
-- **File Size**: Optimize images to < 200KB each for smooth performance
+- **HTML Support**: You can use HTML tags like `<strong>`, `<em>`, etc. for text styling
+- **Readability**: Consider font size and contrast for moving text
 
 ---
 

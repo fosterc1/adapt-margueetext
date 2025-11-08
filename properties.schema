@@ -7,7 +7,7 @@
     "ariaRegion": {
       "type": "string",
       "required": true,
-      "default": "Scrolling marquee text. Images move based on your scroll speed.",
+      "default": "Scrolling marquee text that moves based on your scroll speed.",
       "inputType": "Text",
       "validators": [],
       "translatable": true
@@ -20,15 +20,6 @@
       "enum": ["full-width", "half-width", "both"],
       "default": "full-width",
       "editorOnly": true
-    },
-    "instruction": {
-      "type": "string",
-      "required": false,
-      "default": "",
-      "inputType": "Text",
-      "validators": [],
-      "help": "Instruction text for the component",
-      "translatable": true
     },
     "_setCompletionOn": {
       "type": "string",
@@ -51,59 +42,6 @@
       "inputType": "Number",
       "validators": ["number"],
       "help": "Controls the speed of the marquee. 1 = Slow, 2 = Medium, 3 = Fast. Range: 1 to 5"
-    },
-    "_items": {
-      "type": "array",
-      "required": true,
-      "title": "Marquee Items",
-      "items": {
-        "type": "object",
-        "required": true,
-        "properties": {
-          "_graphic": {
-            "type": "object",
-            "required": false,
-            "title": "Graphic",
-            "properties": {
-              "src": {
-                "type": "string",
-                "required": false,
-                "default": "",
-                "inputType": "Asset:image",
-                "validators": [],
-                "help": "Image to display in the marquee"
-              },
-              "alt": {
-                "type": "string",
-                "required": false,
-                "default": "",
-                "inputType": "Text",
-                "validators": [],
-                "help": "A description of the image for accessibility",
-                "translatable": true
-              },
-              "attribution": {
-                "type": "string",
-                "required": false,
-                "default": "",
-                "inputType": "Text",
-                "validators": [],
-                "help": "Text to be displayed as attribution for the image",
-                "translatable": true
-              }
-            }
-          },
-          "_classes": {
-            "type": "string",
-            "required": false,
-            "default": "",
-            "title": "Custom Classes",
-            "inputType": "Text",
-            "validators": [],
-            "help": "Custom CSS classes to apply to this item"
-          }
-        }
-      }
     }
   }
 }

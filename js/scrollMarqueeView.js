@@ -20,20 +20,11 @@ class ScrollMarqueeView extends ComponentView {
     // Manual render without template system
     const data = this.model.toJSON();
     
-    // Collect all available text fields for the marquee
-    const textParts = [];
-    if (data.title) textParts.push(data.title);
-    if (data.displayTitle) textParts.push(data.displayTitle);
-    if (data.body) textParts.push(data.body);
-    if (data.instruction) textParts.push(data.instruction);
+    // Use only body text for the marquee
+    const bodyText = data.body || '';
+    const singleItem = bodyText ? `<div class="scroll-marquee__item">${bodyText}</div>` : '';
     
-    // Combine with separator - include trailing separator for seamless loop
-    const combinedText = textParts.join(' <span class="scroll-marquee__separator">•</span> ');
-    // Add trailing separator so it looks seamless when repeating
-    const textWithTrailingSeparator = combinedText ? `${combinedText} <span class="scroll-marquee__separator">•</span>` : '';
-    const singleItem = textWithTrailingSeparator ? `<div class="scroll-marquee__item">${textWithTrailingSeparator}</div>` : '';
-    
-    console.log('ScrollMarquee: Rendering with combined text from', textParts.length, 'fields');
+    console.log('ScrollMarquee: Rendering with body text:', bodyText.substring(0, 50) + '...');
     
     const html = `
       <div class="component__inner scroll-marquee__inner-wrapper">
