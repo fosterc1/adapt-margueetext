@@ -1,6 +1,7 @@
 import ComponentView from 'core/js/views/componentView';
 import a11y from 'core/js/a11y';
 import gsapLoader from './gsapLoader';
+import template from '../templates/scrollMarquee.jsx';
 
 class ScrollMarqueeView extends ComponentView {
 
@@ -112,6 +113,6 @@ class ScrollMarqueeView extends ComponentView {
 
 }
 
-ScrollMarqueeView.template = 'scrollMarquee';
+ScrollMarqueeView.template = template;
 
 export default ScrollMarqueeView;
