@@ -153,6 +153,39 @@ If you prefer to include GSAP manually, add to your course's `src/core/index.htm
 - iOS Safari 12+
 - Chrome Mobile
 
+## Styling & Customization
+
+The component uses **CSS Custom Properties** for easy styling customization. All text styling can be changed via CSS without modifying the component code.
+
+### Quick CSS Variables
+
+```css
+.scroll-marquee {
+  --marquee-font-size: 1.5rem;
+  --marquee-font-weight: 600;
+  --marquee-font-family: inherit;
+  --marquee-text-color: inherit;
+  --marquee-text-transform: none;
+  --marquee-letter-spacing: normal;
+  --marquee-gap: 2rem;
+  --marquee-background: transparent;
+  /* ...and more */
+}
+```
+
+**📖 See [CUSTOMIZATION.md](CUSTOMIZATION.md) for complete styling guide with examples**
+
+### What You Can Customize
+
+✅ Font size, weight, and family  
+✅ Text color and background  
+✅ Text transform (uppercase, lowercase)  
+✅ Letter spacing and line height  
+✅ Text shadows and effects  
+✅ Spacing and padding  
+✅ Responsive breakpoints  
+✅ Dark mode support  
+
 ## Tips
 
 - **Text Length**: Keep it concise - 3-6 short phrases works best
@@ -161,6 +194,7 @@ If you prefer to include GSAP manually, add to your course's `src/core/index.htm
 - **Layout**: Use `"_layout": "full"` for maximum visual impact
 - **HTML Support**: You can use HTML tags like `<strong>`, `<em>`, etc. for text styling
 - **Readability**: Consider font size and contrast for moving text
+- **Customization**: Use CSS variables for easy styling - see CUSTOMIZATION.md
 
 ---
 

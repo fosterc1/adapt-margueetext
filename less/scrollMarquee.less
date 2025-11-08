@@ -1,15 +1,28 @@
 .scroll-marquee {
+  // CSS Custom Properties for easy customization
+  --marquee-font-size: 1.5rem;
+  --marquee-font-weight: 600;
+  --marquee-font-family: inherit;
+  --marquee-text-color: inherit;
+  --marquee-text-transform: none;
+  --marquee-letter-spacing: normal;
+  --marquee-line-height: 1.5;
+  --marquee-gap: 2rem;
+  --marquee-padding: 2rem;
+  --marquee-background: transparent;
+  --marquee-text-shadow: none;
   
   &__widget {
     overflow: hidden;
     width: 100%;
+    background: var(--marquee-background);
   }
 
   &__inner {
     display: flex;
     width: max-content;
     will-change: transform;
-    gap: 2rem;
+    gap: var(--marquee-gap);
   }
 
   &__item {
@@ -18,9 +31,17 @@
     align-items: center;
     justify-content: center;
     white-space: nowrap;
-    padding-right: 2rem;
-    font-size: 1.5rem;
-    font-weight: 600;
+    padding-right: var(--marquee-padding);
+    
+    // Typography
+    font-size: var(--marquee-font-size);
+    font-weight: var(--marquee-font-weight);
+    font-family: var(--marquee-font-family);
+    color: var(--marquee-text-color);
+    text-transform: var(--marquee-text-transform);
+    letter-spacing: var(--marquee-letter-spacing);
+    line-height: var(--marquee-line-height);
+    text-shadow: var(--marquee-text-shadow);
   }
 
   // Screen reader only content (accessible but visually hidden)
@@ -56,19 +77,15 @@
 
   // Responsive adjustments
   @media (max-width: 900px) {
-    &__inner {
-      gap: 1.5rem;
-    }
+    --marquee-font-size: 1.35rem;
+    --marquee-gap: 1.5rem;
+    --marquee-padding: 1.5rem;
   }
 
   @media (max-width: 520px) {
-    &__inner {
-      gap: 1rem;
-    }
-
-    &__item {
-      font-size: 1.2rem;
-    }
+    --marquee-font-size: 1.2rem;
+    --marquee-gap: 1rem;
+    --marquee-padding: 1rem;
   }
 
   // Respect prefers-reduced-motion at CSS level too
