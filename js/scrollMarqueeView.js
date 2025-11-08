@@ -5,15 +5,17 @@ import ScrollMarqueeTemplate from './scrollMarquee.jsx';
 
 class ScrollMarqueeView extends ComponentView {
 
+  constructor(options) {
+    super(options);
+    // Override template after initialization to avoid .includes() check
+    this.template = ScrollMarqueeTemplate;
+  }
+
   className() {
     return [
       super.className(),
       'scroll-marquee'
     ].join(' ');
-  }
-
-  get template() {
-    return ScrollMarqueeTemplate;
   }
 
   preRender() {
@@ -116,5 +118,8 @@ class ScrollMarqueeView extends ComponentView {
   }
 
 }
+
+// Provide empty string to satisfy ComponentView.initialize() check
+ScrollMarqueeView.template = '';
 
 export default ScrollMarqueeView;
