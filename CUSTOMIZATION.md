@@ -301,5 +301,5 @@ If you need assistance with customization, check:
 
 ---
 
-**Version:** 3.11.0  
+**Version:** 3.12.0  
 **Last Updated:** 2025-11-08

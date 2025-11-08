@@ -1,6 +1,6 @@
 {
   "name": "adapt-scrollMarquee",
-  "version": "3.11.0",
+  "version": "3.12.0",
   "description": "A scroll-velocity-based marquee component using GSAP ScrollTrigger",
   "main": "js/adapt-scrollMarquee.js",
   "keywords": [

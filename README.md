@@ -202,4 +202,4 @@ The component uses **CSS Custom Properties** for easy styling customization. All
 **Accessibility support:** WAI AA<br>
 **RTL support:** Yes<br>
 **Cross-platform coverage:** Chrome, Chrome for Android, Firefox (ESR + latest version), Edge, Safari for macOS/iOS/iPadOS, Opera<br>
-**Version:** 3.11.0
+**Version:** 3.12.0
