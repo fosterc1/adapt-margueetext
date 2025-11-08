@@ -96,27 +96,44 @@ class GsapLoader {
       // Skip RequireJS for now - just use script tags which are more reliable
       // (RequireJS in Adapt build might not support external URLs)
       
-      // Fallback to script tag method
-      const tryScriptMethod = () => {
-        console.log('ScrollMarquee: Loading GSAP from CDN via script tag...');
-        
-        // Load GSAP first, then ScrollTrigger
-        loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js', 'GSAP (CDN)')
-          .then(() => waitForGlobal('gsap'))
-          .then(() => loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js', 'ScrollTrigger (CDN)'))
-          .then(() => waitForGlobal('ScrollTrigger'))
-          .then(() => {
-            this.isLoaded = true;
-            console.log('ScrollMarquee: GSAP and ScrollTrigger ready');
-            resolve();
-          })
-          .catch((error) => {
-            console.error('ScrollMarquee: Failed to load GSAP libraries:', error);
-            reject(error);
+      // Since GSAP won't attach to window in AMD environment, 
+      // we'll use a different approach: fetch and eval the code
+      const fetchAndEval = (url, globalName) => {
+        return fetch(url)
+          .then(response => response.text())
+          .then(code => {
+            console.log(`ScrollMarquee: Fetched ${globalName}, evaluating...`);
+            // Wrap in IIFE and force global export
+            const wrappedCode = `
+              (function(window) {
+                var define = undefined; // Disable AMD
+                var exports = undefined; // Disable CommonJS
+                var module = undefined;
+                ${code}
+                if (typeof gsap !== 'undefined') window.gsap = gsap;
+                if (typeof ScrollTrigger !== 'undefined') window.ScrollTrigger = ScrollTrigger;
+              })(window);
+            `;
+            eval(wrappedCode);
+            console.log(`ScrollMarquee: Evaluated ${globalName}`);
           });
       };
       
-      tryScriptMethod();
+      console.log('ScrollMarquee: Loading GSAP via fetch+eval to bypass AMD...');
+      
+      fetchAndEval('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js', 'GSAP')
+        .then(() => waitForGlobal('gsap'))
+        .then(() => fetchAndEval('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js', 'ScrollTrigger'))
+        .then(() => waitForGlobal('ScrollTrigger'))
+        .then(() => {
+          this.isLoaded = true;
+          console.log('ScrollMarquee: GSAP and ScrollTrigger ready');
+          resolve();
+        })
+        .catch((error) => {
+          console.error('ScrollMarquee: Failed to load GSAP libraries:', error);
+          reject(error);
+        });
     });
 
     return this.loadPromise;
