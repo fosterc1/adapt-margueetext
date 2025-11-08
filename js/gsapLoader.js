@@ -52,23 +52,31 @@ class GsapLoader {
         });
       };
 
-      const waitForGlobal = (globalName, maxAttempts = 20) => {
+      const waitForGlobal = (globalName, maxAttempts = 30) => {
         return new Promise((resolve, reject) => {
-          if (window[globalName]) {
-            resolve();
-            return;
-          }
-          let attempts = 0;
-          const checkInterval = setInterval(() => {
-            attempts++;
+          // Give script time to execute before first check
+          setTimeout(() => {
             if (window[globalName]) {
-              clearInterval(checkInterval);
+              console.log(`ScrollMarquee: ${globalName} found on window`);
               resolve();
-            } else if (attempts >= maxAttempts) {
-              clearInterval(checkInterval);
-              reject(new Error(`${globalName} not available after loading`));
+              return;
             }
-          }, 100);
+            
+            console.log(`ScrollMarquee: Waiting for ${globalName} to attach to window...`);
+            let attempts = 0;
+            const checkInterval = setInterval(() => {
+              attempts++;
+              if (window[globalName]) {
+                clearInterval(checkInterval);
+                console.log(`ScrollMarquee: ${globalName} found after ${attempts} attempts`);
+                resolve();
+              } else if (attempts >= maxAttempts) {
+                clearInterval(checkInterval);
+                console.error(`ScrollMarquee: ${globalName} not found after ${attempts} attempts`);
+                reject(new Error(`${globalName} not available after loading`));
+              }
+            }, 100);
+          }, 200); // Initial delay to let script execute
         });
       };
 
