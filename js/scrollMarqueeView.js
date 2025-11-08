@@ -133,19 +133,23 @@ class ScrollMarqueeView extends ComponentView {
 
     let xPos = 0;
     let lastScrollY = window.pageYOffset || document.documentElement.scrollTop;
-    let isActive = false;
     
     // Convert user-friendly speed (1-5) to actual multiplier
     const userSpeed = this.model.get('_speed') || 1;
-    const speedMultiplier = userSpeed * 0.5; // Increased for more visible effect
+    const speedMultiplier = userSpeed * 0.5;
 
     // Store reference to the marqueeInner
     const marqueeElement = marqueeInner;
     const loopPoint = marqueeInner.offsetWidth / 2;
 
-    // Scroll handler that updates position
+    // Scroll handler that updates position - always runs but checks if component is active
     const handleScroll = () => {
-      if (!isActive) return;
+      // Check if ScrollTrigger is active (component in viewport)
+      if (!this.scrollTrigger || !this.scrollTrigger.isActive) {
+        // Update lastScrollY even when not active to prevent jumps
+        lastScrollY = window.pageYOffset || document.documentElement.scrollTop;
+        return;
+      }
       
       const currentScrollY = window.pageYOffset || document.documentElement.scrollTop;
       const scrollDelta = currentScrollY - lastScrollY;
@@ -162,56 +166,22 @@ class ScrollMarqueeView extends ComponentView {
       gsap.set(marqueeElement, { x: xPos });
     };
 
-    // Use ScrollTrigger to determine when to activate scroll listener
+    // Use ScrollTrigger to determine when component is in viewport
     this.scrollTrigger = ScrollTrigger.create({
       trigger: this.el,
       start: 'top bottom',
       end: 'bottom top',
-      onEnter: () => {
-        isActive = true;
-        lastScrollY = window.pageYOffset || document.documentElement.scrollTop;
-        console.log('ScrollMarquee: Activated (onEnter)');
-      },
-      onLeave: () => {
-        isActive = false;
-        console.log('ScrollMarquee: Deactivated (onLeave)');
-      },
-      onEnterBack: () => {
-        isActive = true;
-        lastScrollY = window.pageYOffset || document.documentElement.scrollTop;
-        console.log('ScrollMarquee: Re-activated (onEnterBack)');
-      },
-      onLeaveBack: () => {
-        isActive = false;
-        console.log('ScrollMarquee: Deactivated (onLeaveBack)');
-      },
-      onRefresh: (self) => {
-        // Check if already in viewport after refresh
-        if (self.isActive) {
-          isActive = true;
-          lastScrollY = window.pageYOffset || document.documentElement.scrollTop;
-          console.log('ScrollMarquee: Already active after refresh');
-        }
+      onToggle: (self) => {
+        // This fires whenever the active state changes
+        console.log('ScrollMarquee: isActive =', self.isActive);
       }
     });
 
-    // Add global scroll listener
+    // Add global scroll listener - always active, but checks viewport inside
     window.addEventListener('scroll', handleScroll, { passive: true });
     
     // Store handler reference for cleanup
     this.scrollHandler = handleScroll;
-    
-    // Refresh ScrollTrigger to check initial state
-    ScrollTrigger.refresh();
-    
-    // Additional check: if component is already in viewport, activate immediately
-    setTimeout(() => {
-      if (this.scrollTrigger && this.scrollTrigger.isActive && !isActive) {
-        isActive = true;
-        lastScrollY = window.pageYOffset || document.documentElement.scrollTop;
-        console.log('ScrollMarquee: Force activated (already in viewport)');
-      }
-    }, 100);
   }
 
   onInview() {
