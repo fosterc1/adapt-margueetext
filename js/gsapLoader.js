@@ -93,36 +93,8 @@ class GsapLoader {
         });
       };
 
-      // Try using RequireJS if available (Adapt uses RequireJS/AMD)
-      if (typeof define === 'function' && define.amd && typeof require === 'function') {
-        console.log('ScrollMarquee: Trying to load GSAP via RequireJS...');
-        
-        require.config({
-          paths: {
-            'gsap': 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min',
-            'ScrollTrigger': 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min'
-          },
-          shim: {
-            'ScrollTrigger': {
-              deps: ['gsap']
-            }
-          }
-        });
-        
-        require(['gsap', 'ScrollTrigger'], (gsap, ScrollTrigger) => {
-          console.log('ScrollMarquee: GSAP loaded via RequireJS');
-          window.gsap = gsap;
-          window.ScrollTrigger = ScrollTrigger;
-          this.isLoaded = true;
-          resolve();
-        }, (error) => {
-          console.warn('ScrollMarquee: RequireJS loading failed, trying script tags...', error);
-          // Fall back to script tag method
-          tryScriptMethod();
-        });
-        
-        return;
-      }
+      // Skip RequireJS for now - just use script tags which are more reliable
+      // (RequireJS in Adapt build might not support external URLs)
       
       // Fallback to script tag method
       const tryScriptMethod = () => {
