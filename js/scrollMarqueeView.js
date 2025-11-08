@@ -16,19 +16,23 @@ class ScrollMarquee extends ComponentView {
   }
 
   postRender() {
+    console.log('ScrollMarquee: postRender called');
     this.setReadyStatus();
     
     if (this.model.get('_setCompletionOn') === 'inview') {
       this.setupInviewCompletion('.component__widget', this.onInview.bind(this));
     }
 
-    // Wait for GSAP and ScrollTrigger to be available
+    // Load GSAP asynchronously - component still displays without it
+    console.log('ScrollMarquee: Loading GSAP...');
     gsapLoader.load()
       .then(() => {
+        console.log('ScrollMarquee: GSAP loaded, setting up marquee');
         this.setupMarquee();
       })
       .catch((error) => {
-        console.error('ScrollMarquee: Failed to load GSAP', error);
+        console.warn('ScrollMarquee: Animation disabled - GSAP failed to load', error);
+        // Component still displays, just without scroll animation
       });
   }
 

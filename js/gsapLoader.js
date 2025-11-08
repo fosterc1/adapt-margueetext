@@ -10,36 +10,48 @@ class GsapLoader {
   }
 
   async load() {
-    if (this.isLoaded) return Promise.resolve();
+    // Check if GSAP is already loaded
+    if (window.gsap && window.ScrollTrigger) {
+      this.isLoaded = true;
+      return Promise.resolve();
+    }
+
+    // If already loading, return existing promise
     if (this.loadPromise) return this.loadPromise;
 
     this.loadPromise = new Promise((resolve, reject) => {
-      // Check if GSAP is already loaded
-      if (window.gsap && window.ScrollTrigger) {
-        this.isLoaded = true;
-        resolve();
-        return;
-      }
-
       // Try to load from CDN if not already present
       const loadScript = (src) => {
         return new Promise((resolve, reject) => {
+          // Check if already in document
+          const existing = document.querySelector(`script[src="${src}"]`);
+          if (existing) {
+            resolve();
+            return;
+          }
+
           const script = document.createElement('script');
           script.src = src;
+          script.async = true;
           script.onload = resolve;
-          script.onerror = reject;
+          script.onerror = () => reject(new Error(`Failed to load ${src}`));
           document.head.appendChild(script);
         });
       };
 
-      // Load GSAP and ScrollTrigger
-      Promise.all([
-        loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js'),
-        loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js')
-      ])
+      // Load GSAP first, then ScrollTrigger
+      loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js')
+        .then(() => loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js'))
         .then(() => {
-          this.isLoaded = true;
-          resolve();
+          // Wait a bit for scripts to initialize
+          setTimeout(() => {
+            if (window.gsap && window.ScrollTrigger) {
+              this.isLoaded = true;
+              resolve();
+            } else {
+              reject(new Error('GSAP loaded but not available on window'));
+            }
+          }, 100);
         })
         .catch((error) => {
           console.error('Failed to load GSAP libraries:', error);
