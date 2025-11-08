@@ -132,6 +132,8 @@ class ScrollMarqueeView extends ComponentView {
     }
 
     let xPos = 0;
+    let lastScrollPos = window.pageYOffset || window.scrollY || 0;
+    
     // Convert user-friendly speed (1-5) to actual multiplier
     const userSpeed = this.model.get('_speed') || 1;
     const speedMultiplier = userSpeed * 0.01; // 1=0.01, 2=0.02, 3=0.03, etc.
@@ -142,9 +144,20 @@ class ScrollMarqueeView extends ComponentView {
       end: 'bottom top',
       scrub: 0.5, // Smoother scrubbing with slight delay
       invalidateOnRefresh: true,
+      onEnter: () => {
+        // Initialize lastScrollPos when entering viewport
+        lastScrollPos = window.pageYOffset || window.scrollY || 0;
+        console.log('ScrollMarquee: Entered viewport, initialized at scroll position:', lastScrollPos);
+      },
       onUpdate: (self) => {
-        // Only animate based on scroll velocity
-        const scrollSpeed = self.getVelocity() * speedMultiplier;
+        // Calculate scroll delta since last update
+        const currentScrollPos = window.pageYOffset || window.scrollY || 0;
+        const scrollDelta = currentScrollPos - lastScrollPos;
+        lastScrollPos = currentScrollPos;
+        
+        // Use velocity for responsive feel, but fall back to delta if velocity is zero
+        const velocity = self.getVelocity();
+        const scrollSpeed = velocity !== 0 ? velocity * speedMultiplier : scrollDelta * speedMultiplier * 10;
 
         xPos -= scrollSpeed;
 
@@ -161,7 +174,8 @@ class ScrollMarqueeView extends ComponentView {
       },
       onRefresh: () => {
         // Reset position when ScrollTrigger refreshes
-        console.log('ScrollMarquee: ScrollTrigger refreshed');
+        lastScrollPos = window.pageYOffset || window.scrollY || 0;
+        console.log('ScrollMarquee: ScrollTrigger refreshed at:', lastScrollPos);
       }
     });
   }
