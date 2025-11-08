@@ -132,52 +132,69 @@ class ScrollMarqueeView extends ComponentView {
     }
 
     let xPos = 0;
-    let lastScrollPos = window.pageYOffset || window.scrollY || 0;
+    let lastScrollY = window.pageYOffset || document.documentElement.scrollTop;
+    let isActive = false;
     
     // Convert user-friendly speed (1-5) to actual multiplier
     const userSpeed = this.model.get('_speed') || 1;
-    const speedMultiplier = userSpeed * 0.01; // 1=0.01, 2=0.02, 3=0.03, etc.
+    const speedMultiplier = userSpeed * 0.5; // Increased for more visible effect
 
+    // Store reference to the marqueeInner
+    const marqueeElement = marqueeInner;
+    const loopPoint = marqueeInner.offsetWidth / 2;
+
+    // Scroll handler that updates position
+    const handleScroll = () => {
+      if (!isActive) return;
+      
+      const currentScrollY = window.pageYOffset || document.documentElement.scrollTop;
+      const scrollDelta = currentScrollY - lastScrollY;
+      lastScrollY = currentScrollY;
+      
+      // Update position based on scroll delta
+      xPos -= scrollDelta * speedMultiplier;
+
+      // Reset position for seamless loop
+      if (xPos <= -loopPoint) xPos = 0;
+      if (xPos >= 0) xPos = -loopPoint;
+
+      // Apply transform
+      gsap.set(marqueeElement, { x: xPos });
+    };
+
+    // Use ScrollTrigger to determine when to activate scroll listener
     this.scrollTrigger = ScrollTrigger.create({
       trigger: this.el,
       start: 'top bottom',
       end: 'bottom top',
-      scrub: 0.5, // Smoother scrubbing with slight delay
-      invalidateOnRefresh: true,
       onEnter: () => {
-        // Initialize lastScrollPos when entering viewport
-        lastScrollPos = window.pageYOffset || window.scrollY || 0;
-        console.log('ScrollMarquee: Entered viewport, initialized at scroll position:', lastScrollPos);
+        isActive = true;
+        lastScrollY = window.pageYOffset || document.documentElement.scrollTop;
+        console.log('ScrollMarquee: Activated');
       },
-      onUpdate: (self) => {
-        // Calculate scroll delta since last update
-        const currentScrollPos = window.pageYOffset || window.scrollY || 0;
-        const scrollDelta = currentScrollPos - lastScrollPos;
-        lastScrollPos = currentScrollPos;
-        
-        // Use velocity for responsive feel, but fall back to delta if velocity is zero
-        const velocity = self.getVelocity();
-        const scrollSpeed = velocity !== 0 ? velocity * speedMultiplier : scrollDelta * speedMultiplier * 10;
-
-        xPos -= scrollSpeed;
-
-        // Reset position to prevent large numbers and create seamless loop
-        const marqueeWidth = marqueeInner.offsetWidth;
-        const loopPoint = marqueeWidth / 2;
-        
-        if (xPos <= -loopPoint) xPos = 0;
-        if (xPos >= 0) xPos = -loopPoint;
-
-        gsap.set(marqueeInner, {
-          x: xPos
-        });
+      onLeave: () => {
+        isActive = false;
+        console.log('ScrollMarquee: Deactivated');
       },
-      onRefresh: () => {
-        // Reset position when ScrollTrigger refreshes
-        lastScrollPos = window.pageYOffset || window.scrollY || 0;
-        console.log('ScrollMarquee: ScrollTrigger refreshed at:', lastScrollPos);
+      onEnterBack: () => {
+        isActive = true;
+        lastScrollY = window.pageYOffset || document.documentElement.scrollTop;
+        console.log('ScrollMarquee: Re-activated');
+      },
+      onLeaveBack: () => {
+        isActive = false;
+        console.log('ScrollMarquee: Deactivated (back)');
       }
     });
+
+    // Add global scroll listener
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    // Store handler reference for cleanup
+    this.scrollHandler = handleScroll;
+    
+    // Check if already in viewport on init
+    ScrollTrigger.refresh();
   }
 
   onInview() {
@@ -193,6 +210,9 @@ class ScrollMarqueeView extends ComponentView {
   remove() {
     if (this.scrollTrigger) {
       this.scrollTrigger.kill();
+    }
+    if (this.scrollHandler) {
+      window.removeEventListener('scroll', this.scrollHandler);
     }
     super.remove();
   }
