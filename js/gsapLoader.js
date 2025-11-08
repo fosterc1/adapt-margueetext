@@ -96,27 +96,36 @@ class GsapLoader {
       // Skip RequireJS for now - just use script tags which are more reliable
       // (RequireJS in Adapt build might not support external URLs)
       
-      // Since GSAP won't attach to window in AMD environment, 
-      // we'll use a different approach: fetch and eval the code
+      // Since GSAP won't attach to window in AMD environment,
+      // temporarily disable AMD detection in the global scope
       const fetchAndEval = (url, globalName) => {
         return fetch(url)
           .then(response => response.text())
           .then(code => {
             console.log(`ScrollMarquee: Fetched ${globalName}, evaluating...`);
-            // Disable AMD/CommonJS detection and force global mode
-            const wrappedCode = `
-              (function() {
-                var define = undefined; // Disable AMD
-                var exports = undefined; // Disable CommonJS
-                var module = undefined;
-                ${code}
-                // After execution, attach to window if not already there
-                if (typeof gsap !== 'undefined' && !window.gsap) window.gsap = gsap;
-                if (typeof ScrollTrigger !== 'undefined' && !window.ScrollTrigger) window.ScrollTrigger = ScrollTrigger;
-              })();
-            `;
-            eval(wrappedCode);
-            console.log(`ScrollMarquee: Evaluated ${globalName}`);
+            
+            // Save and disable AMD/CommonJS temporarily
+            const savedDefine = window.define;
+            const savedExports = window.exports;
+            const savedModule = window.module;
+            
+            try {
+              window.define = undefined;
+              window.exports = undefined;
+              window.module = undefined;
+              
+              // Eval the code - GSAP should now attach to window
+              eval(code);
+              
+              console.log(`ScrollMarquee: Evaluated ${globalName}`);
+              console.log(`ScrollMarquee: window.gsap exists:`, !!window.gsap);
+              console.log(`ScrollMarquee: window.ScrollTrigger exists:`, !!window.ScrollTrigger);
+            } finally {
+              // Restore AMD/CommonJS
+              if (savedDefine) window.define = savedDefine;
+              if (savedExports) window.exports = savedExports;
+              if (savedModule) window.module = savedModule;
+            }
           });
       };
       
