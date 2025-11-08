@@ -1,6 +1,9 @@
 /**
- * GSAP Loader Extension
- * Ensures GSAP and ScrollTrigger are loaded before the component initializes
+ * GSAP Loader
+ * Priority loading strategy:
+ * 1. Check if GSAP already exists (theme/framework includes it)
+ * 2. Try loading bundled version from plugin
+ * 3. Fall back to CDN as last resort
  */
 
 class GsapLoader {
@@ -10,8 +13,9 @@ class GsapLoader {
   }
 
   async load() {
-    // Check if GSAP is already loaded
+    // Priority 1: Check if GSAP is already loaded (from theme/framework)
     if (window.gsap && window.ScrollTrigger) {
+      console.log('ScrollMarquee: Using GSAP from theme/framework');
       this.isLoaded = true;
       return Promise.resolve();
     }
@@ -20,11 +24,10 @@ class GsapLoader {
     if (this.loadPromise) return this.loadPromise;
 
     this.loadPromise = new Promise((resolve, reject) => {
-      // Try to load from CDN if not already present
-      const loadScript = (src) => {
+      const loadScript = (src, description) => {
         return new Promise((resolve, reject) => {
           // Check if already in document
-          const existing = document.querySelector(`script[src="${src}"]`);
+          const existing = document.querySelector(`script[src*="${src.split('/').pop()}"]`);
           if (existing) {
             resolve();
             return;
@@ -33,58 +36,70 @@ class GsapLoader {
           const script = document.createElement('script');
           script.src = src;
           script.async = true;
-          script.onload = resolve;
-          script.onerror = () => reject(new Error(`Failed to load ${src}`));
+          script.onload = () => {
+            console.log(`ScrollMarquee: Loaded ${description} from ${src}`);
+            resolve();
+          };
+          script.onerror = () => reject(new Error(`Failed to load ${description} from ${src}`));
           document.head.appendChild(script);
         });
       };
 
-      // Load GSAP first, then ScrollTrigger
-      loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js')
-        .then(() => {
-          // Check if GSAP loaded immediately
-          if (window.gsap) {
-            return Promise.resolve();
-          }
-          // Wait for GSAP to be available
-          return new Promise((resolve, reject) => {
-            let attempts = 0;
-            const checkGsap = setInterval(() => {
-              attempts++;
-              if (window.gsap) {
-                clearInterval(checkGsap);
-                resolve();
-              } else if (attempts > 20) {
-                clearInterval(checkGsap);
-                reject(new Error('GSAP not available after loading'));
-              }
-            }, 100);
-          });
-        })
-        .then(() => loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js'))
-        .then(() => {
-          // Check if ScrollTrigger loaded immediately
-          if (window.ScrollTrigger) {
-            this.isLoaded = true;
+      const waitForGlobal = (globalName, maxAttempts = 20) => {
+        return new Promise((resolve, reject) => {
+          if (window[globalName]) {
             resolve();
             return;
           }
-          // Wait for ScrollTrigger to be available
           let attempts = 0;
-          const checkScrollTrigger = setInterval(() => {
+          const checkInterval = setInterval(() => {
             attempts++;
-            if (window.ScrollTrigger) {
-              clearInterval(checkScrollTrigger);
-              this.isLoaded = true;
+            if (window[globalName]) {
+              clearInterval(checkInterval);
               resolve();
-            } else if (attempts > 20) {
-              clearInterval(checkScrollTrigger);
-              reject(new Error('ScrollTrigger not available after loading'));
+            } else if (attempts >= maxAttempts) {
+              clearInterval(checkInterval);
+              reject(new Error(`${globalName} not available after loading`));
             }
           }, 100);
+        });
+      };
+
+      // Try loading sequence: bundled first, then CDN
+      const tryLoadGsap = () => {
+        // Priority 2: Try bundled version from plugin
+        console.log('ScrollMarquee: Trying bundled GSAP...');
+        return loadScript('components/adapt-scrollMarquee/libraries/gsap.min.js', 'GSAP (bundled)')
+          .catch(() => {
+            // Priority 3: Fall back to CDN
+            console.log('ScrollMarquee: Bundled GSAP not found, using CDN...');
+            return loadScript('https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js', 'GSAP (CDN)');
+          });
+      };
+
+      const tryLoadScrollTrigger = () => {
+        // Priority 2: Try bundled version from plugin
+        console.log('ScrollMarquee: Trying bundled ScrollTrigger...');
+        return loadScript('components/adapt-scrollMarquee/libraries/ScrollTrigger.min.js', 'ScrollTrigger (bundled)')
+          .catch(() => {
+            // Priority 3: Fall back to CDN
+            console.log('ScrollMarquee: Bundled ScrollTrigger not found, using CDN...');
+            return loadScript('https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js', 'ScrollTrigger (CDN)');
+          });
+      };
+
+      // Load GSAP first, then ScrollTrigger
+      tryLoadGsap()
+        .then(() => waitForGlobal('gsap'))
+        .then(() => tryLoadScrollTrigger())
+        .then(() => waitForGlobal('ScrollTrigger'))
+        .then(() => {
+          this.isLoaded = true;
+          console.log('ScrollMarquee: GSAP and ScrollTrigger ready');
+          resolve();
         })
         .catch((error) => {
-          console.error('Failed to load GSAP libraries:', error);
+          console.error('ScrollMarquee: Failed to load GSAP libraries:', error);
           reject(error);
         });
     });
