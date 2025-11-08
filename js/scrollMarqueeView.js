@@ -31,13 +31,18 @@ class ScrollMarqueeView extends ComponentView {
       ? data._globals.ariaRegion 
       : 'Scrolling marquee text that moves based on your scroll speed.';
     
+    // Detect text direction for RTL support
+    const textDirection = this.detectTextDirection(bodyText);
+    const dirAttribute = textDirection === 'rtl' ? ' dir="rtl"' : ' dir="ltr"';
+    
+    // FIX: Moving content should be aria-hidden="true" to prevent duplicate announcements
     const html = `
       <div class="component__inner scroll-marquee__inner-wrapper">
         <div class="component__widget scroll-marquee__widget" 
              role="region" 
              aria-label="${ariaLabel}"
-             aria-live="polite">
-          <div class="scroll-marquee__inner" aria-hidden="false">
+             aria-live="polite"${dirAttribute}>
+          <div class="scroll-marquee__inner" aria-hidden="true">
             ${singleItem}
           </div>
         </div>
@@ -46,6 +51,9 @@ class ScrollMarqueeView extends ComponentView {
     
     this.$el.html(html);
     this.$el.addClass(this.className());
+    
+    // Store text direction for animation
+    this.$el.attr('data-text-direction', textDirection);
     
     // Add accessible text for screen readers (non-moving version)
     if (bodyText) {
@@ -61,6 +69,35 @@ class ScrollMarqueeView extends ComponentView {
     }, 0);
     
     return this;
+  }
+
+  /**
+   * Detect text direction (LTR or RTL) based on content
+   * @param {string} text - The text to analyze
+   * @returns {string} - 'rtl' or 'ltr'
+   */
+  detectTextDirection(text) {
+    if (!text) return 'ltr';
+    
+    // Check for explicit HTML dir attribute
+    const dirMatch = text.match(/dir=["']?(rtl|ltr)["']?/i);
+    if (dirMatch) {
+      return dirMatch[1].toLowerCase();
+    }
+    
+    // Check for RTL Unicode characters (Arabic, Hebrew, Farsi, etc.)
+    const rtlChars = /[\u0591-\u07FF\uFB1D-\uFDFD\uFE70-\uFEFC]/;
+    if (rtlChars.test(text)) {
+      return 'rtl';
+    }
+    
+    // Check document or element direction
+    const docDir = document.documentElement.dir || document.body.dir;
+    if (docDir === 'rtl') {
+      return 'rtl';
+    }
+    
+    return 'ltr';
   }
 
   preRender() {
@@ -92,143 +129,210 @@ class ScrollMarqueeView extends ComponentView {
         this.setupMarquee();
       })
       .catch((error) => {
-        console.warn('ScrollMarquee: Animation disabled - GSAP failed to load', error);
-        // Component still displays and works, just without scroll animation
+        console.error('ScrollMarquee: Animation disabled - GSAP failed to load', error);
+        this.handleError('GSAP_LOAD_FAILED', 'Failed to load animation library', error);
       });
   }
 
+  /**
+   * Handle and display errors gracefully
+   * @param {string} errorCode - Error identifier
+   * @param {string} message - User-friendly error message
+   * @param {Error} error - Original error object (optional)
+   */
+  handleError(errorCode, message, error = null) {
+    console.error(`ScrollMarquee Error [${errorCode}]: ${message}`, error);
+    
+    // Add error state CSS class
+    this.$el.addClass('scroll-marquee--error');
+    this.$el.attr('data-error-code', errorCode);
+    
+    // Display user-friendly error message
+    const errorHtml = `
+      <div class="scroll-marquee__error" role="alert">
+        <p class="scroll-marquee__error-message">
+          ${message}
+        </p>
+      </div>
+    `;
+    
+    this.$('.component__widget').append(errorHtml);
+    
+    // Log to console for debugging
+    if (error) {
+      console.error('ScrollMarquee: Error details:', error);
+    }
+  }
+
   setupMarquee() {
-    const gsap = window.gsap;
-    const ScrollTrigger = window.ScrollTrigger;
+    try {
+      const gsap = window.gsap;
+      const ScrollTrigger = window.ScrollTrigger;
 
-    if (!gsap || !ScrollTrigger) {
-      console.warn('ScrollMarquee: GSAP or ScrollTrigger not found. Please include GSAP library.');
-      return;
-    }
+      if (!gsap || !ScrollTrigger) {
+        this.handleError('GSAP_NOT_FOUND', 'Animation library not available. Displaying static content.');
+        return;
+      }
 
-    // Check for manual animation disable or prefers-reduced-motion
-    const manualDisable = this.model.get('_disableAnimation');
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    
-    if (manualDisable || prefersReducedMotion) {
-      const reason = manualDisable ? 'manually disabled' : 'reduced motion preference detected';
-      console.log(`ScrollMarquee: Animation ${reason} - displaying static content`);
-      // Add class to indicate reduced motion mode
-      this.$el.addClass('scroll-marquee--reduced-motion');
-      // Make marquee content static and accessible
-      this.$('.scroll-marquee__inner').attr('aria-hidden', 'false');
-      return;
-    }
+      // Check for manual animation disable or prefers-reduced-motion
+      const manualDisable = this.model.get('_disableAnimation');
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      
+      if (manualDisable || prefersReducedMotion) {
+        const reason = manualDisable ? 'manually disabled' : 'reduced motion preference detected';
+        console.log(`ScrollMarquee: Animation ${reason} - displaying static content`);
+        // Add class to indicate reduced motion mode
+        this.$el.addClass('scroll-marquee--reduced-motion');
+        // Make marquee content static and accessible
+        this.$('.scroll-marquee__inner').attr('aria-hidden', 'false');
+        return;
+      }
 
-    gsap.registerPlugin(ScrollTrigger);
+      gsap.registerPlugin(ScrollTrigger);
 
-    const marqueeInner = this.$('.scroll-marquee__inner')[0];
-    if (!marqueeInner) {
-      console.warn('ScrollMarquee: marquee inner element not found');
-      return;
-    }
+      const marqueeInner = this.$('.scroll-marquee__inner')[0];
+      if (!marqueeInner) {
+        this.handleError('ELEMENT_NOT_FOUND', 'Marquee element not found');
+        return;
+      }
 
-    console.log('ScrollMarquee: marqueeInner children count:', marqueeInner.children.length);
-    console.log('ScrollMarquee: marqueeInner innerHTML:', marqueeInner.innerHTML);
+      console.log('ScrollMarquee: marqueeInner children count:', marqueeInner.children.length);
+      console.log('ScrollMarquee: marqueeInner innerHTML:', marqueeInner.innerHTML);
 
-    const firstItem = marqueeInner.children[0];
-    
-    // Only setup marquee if there is content
-    if (!firstItem) {
-      console.warn('ScrollMarquee: No items to display - marqueeInner has no children');
-      console.warn('ScrollMarquee: Body content was:', this.model.get('body'));
-      return;
-    }
-    
-    // Calculate how many copies we need to fill viewport width + extra for seamless loop
-    const viewportWidth = window.innerWidth;
-    const itemWidth = firstItem.offsetWidth;
-    
-    if (itemWidth === 0) {
-      console.warn('ScrollMarquee: Item has no width, cannot calculate repetitions');
-      return;
-    }
-    
-    // Calculate copies needed: viewport width * 3 (to ensure coverage during scroll)
-    const copiesNeeded = Math.ceil((viewportWidth * 3) / itemWidth);
-    
-    console.log(`ScrollMarquee: Viewport ${viewportWidth}px, Item ${itemWidth}px, Creating ${copiesNeeded} copies`);
-    
-    // Create the needed copies
-    for (let i = 0; i < copiesNeeded; i++) {
-      marqueeInner.appendChild(firstItem.cloneNode(true));
-    }
-
-    let xPos = 0;
-    // Support multiple scroll position methods for cross-browser compatibility
-    const getScrollY = () => window.pageYOffset || window.scrollY || document.documentElement.scrollTop || 0;
-    let lastScrollY = getScrollY();
-    
-    // Convert user-friendly speed (1-5) to actual multiplier
-    const userSpeed = this.model.get('_speed') || 1;
-    const speedMultiplier = userSpeed * 0.5;
-
-    // Store reference to the marqueeInner
-    const marqueeElement = marqueeInner;
-    const loopPoint = marqueeInner.offsetWidth / 2;
-
-    // Scroll handler that updates position - always runs but checks if component is active
-    const handleScroll = () => {
-      // Check if ScrollTrigger is active (component in viewport)
-      if (!this.scrollTrigger || !this.scrollTrigger.isActive) {
-        // Update lastScrollY even when not active to prevent jumps
-        lastScrollY = getScrollY();
+      const firstItem = marqueeInner.children[0];
+      
+      // Only setup marquee if there is content
+      if (!firstItem) {
+        console.warn('ScrollMarquee: No items to display - marqueeInner has no children');
+        console.warn('ScrollMarquee: Body content was:', this.model.get('body'));
         return;
       }
       
-      const currentScrollY = getScrollY();
-      const scrollDelta = currentScrollY - lastScrollY;
-      lastScrollY = currentScrollY;
+      // Calculate how many copies we need to fill viewport width + extra for seamless loop
+      const viewportWidth = window.innerWidth;
+      const itemWidth = firstItem.offsetWidth;
       
-      // Update position based on scroll delta
-      xPos -= scrollDelta * speedMultiplier;
-
-      // Reset position for seamless loop
-      if (xPos <= -loopPoint) xPos = 0;
-      if (xPos >= 0) xPos = -loopPoint;
-
-      // Apply transform
-      gsap.set(marqueeElement, { x: xPos });
-    };
-
-    // Use ScrollTrigger to determine when component is in viewport
-    this.scrollTrigger = ScrollTrigger.create({
-      trigger: this.el,
-      start: 'top bottom',
-      end: 'bottom top',
-      onToggle: (self) => {
-        // This fires whenever the active state changes
-        console.log('ScrollMarquee: isActive =', self.isActive);
+      if (itemWidth === 0) {
+        console.warn('ScrollMarquee: Item has no width, cannot calculate repetitions');
+        return;
       }
-    });
-
-    // Add global scroll listener - always active, but checks viewport inside
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    
-    // Store handler reference for cleanup
-    this.scrollHandler = handleScroll;
-    
-    // Handle window resize for responsive layouts
-    const handleResize = () => {
-      // Recalculate if viewport width changed significantly
-      const newViewportWidth = window.innerWidth;
-      const widthDiff = Math.abs(newViewportWidth - viewportWidth);
       
-      // Only recalculate if width changed by more than 100px (avoid minor adjustments)
-      if (widthDiff > 100) {
-        console.log('ScrollMarquee: Viewport width changed significantly, refreshing');
-        // Refresh ScrollTrigger to recalculate positions
-        ScrollTrigger.refresh();
+      // Calculate copies needed: viewport width * 3 (to ensure coverage during scroll)
+      const copiesNeeded = Math.ceil((viewportWidth * 3) / itemWidth);
+      
+      console.log(`ScrollMarquee: Viewport ${viewportWidth}px, Item ${itemWidth}px, Creating ${copiesNeeded} copies`);
+      
+      // Create the needed copies
+      for (let i = 0; i < copiesNeeded; i++) {
+        marqueeInner.appendChild(firstItem.cloneNode(true));
       }
-    };
-    
-    window.addEventListener('resize', handleResize, { passive: true });
-    this.resizeHandler = handleResize;
+
+      // Detect text direction for RTL support
+      const textDirection = this.$el.attr('data-text-direction') || 'ltr';
+      const isRTL = textDirection === 'rtl';
+      
+      // Adjust scroll direction for RTL languages
+      const directionMultiplier = isRTL ? 1 : -1;
+      
+      console.log(`ScrollMarquee: Text direction: ${textDirection}, RTL: ${isRTL}`);
+
+      let xPos = 0;
+      // Support multiple scroll position methods for cross-browser compatibility
+      const getScrollY = () => window.pageYOffset || window.scrollY || document.documentElement.scrollTop || 0;
+      let lastScrollY = getScrollY();
+      
+      // Convert user-friendly speed (1-5) to actual multiplier
+      const userSpeed = this.model.get('_speed') || 1;
+      const speedMultiplier = userSpeed * 0.5;
+
+      // Store reference to the marqueeInner
+      const marqueeElement = marqueeInner;
+      const loopPoint = marqueeInner.offsetWidth / 2;
+
+      // Scroll handler that updates position - always runs but checks if component is active
+      const handleScroll = () => {
+        try {
+          // Check if ScrollTrigger is active (component in viewport)
+          if (!this.scrollTrigger || !this.scrollTrigger.isActive) {
+            // Update lastScrollY even when not active to prevent jumps
+            lastScrollY = getScrollY();
+            return;
+          }
+          
+          const currentScrollY = getScrollY();
+          const scrollDelta = currentScrollY - lastScrollY;
+          lastScrollY = currentScrollY;
+          
+          // Update position based on scroll delta (with RTL direction support)
+          xPos += directionMultiplier * scrollDelta * speedMultiplier;
+
+          // Reset position for seamless loop (adjusted for RTL)
+          if (isRTL) {
+            if (xPos >= loopPoint) xPos = 0;
+            if (xPos <= 0) xPos = loopPoint;
+          } else {
+            if (xPos <= -loopPoint) xPos = 0;
+            if (xPos >= 0) xPos = -loopPoint;
+          }
+
+          // Apply transform
+          gsap.set(marqueeElement, { x: xPos });
+        } catch (error) {
+          console.error('ScrollMarquee: Error in scroll handler:', error);
+        }
+      };
+
+      // Use ScrollTrigger to determine when component is in viewport
+      this.scrollTrigger = ScrollTrigger.create({
+        trigger: this.el,
+        start: 'top bottom',
+        end: 'bottom top',
+        onToggle: (self) => {
+          // This fires whenever the active state changes
+          console.log('ScrollMarquee: isActive =', self.isActive);
+        }
+      });
+
+      // Add global scroll listener - always active, but checks viewport inside
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      
+      // Store handler reference for cleanup
+      this.scrollHandler = handleScroll;
+      
+      // Debounced resize handler for performance
+      let resizeTimeout;
+      const handleResize = () => {
+        try {
+          // Clear previous timeout
+          if (resizeTimeout) {
+            clearTimeout(resizeTimeout);
+          }
+          
+          // Debounce resize handler (wait 150ms after resize stops)
+          resizeTimeout = setTimeout(() => {
+            // Recalculate if viewport width changed significantly
+            const newViewportWidth = window.innerWidth;
+            const widthDiff = Math.abs(newViewportWidth - viewportWidth);
+            
+            // Only recalculate if width changed by more than 100px (avoid minor adjustments)
+            if (widthDiff > 100) {
+              console.log('ScrollMarquee: Viewport width changed significantly, refreshing');
+              // Refresh ScrollTrigger to recalculate positions
+              ScrollTrigger.refresh();
+            }
+          }, 150);
+        } catch (error) {
+          console.error('ScrollMarquee: Error in resize handler:', error);
+        }
+      };
+      
+      window.addEventListener('resize', handleResize, { passive: true });
+      this.resizeHandler = handleResize;
+      
+    } catch (error) {
+      console.error('ScrollMarquee: Critical error in setupMarquee:', error);
+      this.handleError('SETUP_FAILED', 'Failed to initialize marquee animation', error);
+    }
   }
 
   onInview() {
