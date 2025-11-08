@@ -112,6 +112,6 @@ class ScrollMarquee extends ComponentView {
 
 }
 
-ScrollMarquee.template = 'scrollMarquee.jsx';
+ScrollMarquee.template = 'scrollMarquee';
 
 export default ScrollMarquee;
