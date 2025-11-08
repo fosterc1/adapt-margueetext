@@ -1,6 +1,6 @@
 {
   "name": "adapt-scrollMarquee",
-  "version": "3.2.2",
+  "version": "3.2.3",
   "framework": "^5.0.0",
   "homepage": "https://github.com/fosterc1/adapt-margueetext",
   "displayName": "Scrolling Marquee Text",
