@@ -129,4 +129,4 @@ If you prefer to include GSAP manually, add to your course's `src/core/index.htm
 **Accessibility support:** WAI AA<br>
 **RTL support:** Yes<br>
 **Cross-platform coverage:** Chrome, Chrome for Android, Firefox (ESR + latest version), Edge, Safari for macOS/iOS/iPadOS, Opera<br>
-**Version:** 3.9.0
+**Version:** 3.10.0
