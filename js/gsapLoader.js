@@ -41,17 +41,47 @@ class GsapLoader {
 
       // Load GSAP first, then ScrollTrigger
       loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js')
+        .then(() => {
+          // Check if GSAP loaded immediately
+          if (window.gsap) {
+            return Promise.resolve();
+          }
+          // Wait for GSAP to be available
+          return new Promise((resolve, reject) => {
+            let attempts = 0;
+            const checkGsap = setInterval(() => {
+              attempts++;
+              if (window.gsap) {
+                clearInterval(checkGsap);
+                resolve();
+              } else if (attempts > 20) {
+                clearInterval(checkGsap);
+                reject(new Error('GSAP not available after loading'));
+              }
+            }, 100);
+          });
+        })
         .then(() => loadScript('https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js'))
         .then(() => {
-          // Wait a bit for scripts to initialize
-          setTimeout(() => {
-            if (window.gsap && window.ScrollTrigger) {
+          // Check if ScrollTrigger loaded immediately
+          if (window.ScrollTrigger) {
+            this.isLoaded = true;
+            resolve();
+            return;
+          }
+          // Wait for ScrollTrigger to be available
+          let attempts = 0;
+          const checkScrollTrigger = setInterval(() => {
+            attempts++;
+            if (window.ScrollTrigger) {
+              clearInterval(checkScrollTrigger);
               this.isLoaded = true;
               resolve();
-            } else {
-              reject(new Error('GSAP loaded but not available on window'));
+            } else if (attempts > 20) {
+              clearInterval(checkScrollTrigger);
+              reject(new Error('ScrollTrigger not available after loading'));
             }
-          }, 500);
+          }, 100);
         })
         .catch((error) => {
           console.error('Failed to load GSAP libraries:', error);
