@@ -20,15 +20,19 @@ class ScrollMarqueeView extends ComponentView {
     // Manual render without template system
     const data = this.model.toJSON();
     
+    // Repeat text enough times to fill viewport (GSAP will duplicate further)
+    const textContent = data.body || '';
+    const repeatedText = textContent ? new Array(10).fill(`<div class="scroll-marquee__item">${textContent}</div>`).join('') : '';
+    
     const html = `
-      <div class="component__inner scroll-marquee__inner">
+      <div class="component__inner scroll-marquee__inner-wrapper">
         <div class="component__header">
           ${data.displayTitle ? `<div class="component__title">${data.displayTitle}</div>` : ''}
           ${data.instruction ? `<div class="component__instruction">${data.instruction}</div>` : ''}
         </div>
         <div class="component__widget scroll-marquee__widget">
           <div class="scroll-marquee__inner">
-            ${data.body ? `<div class="scroll-marquee__text">${data.body}</div>` : ''}
+            ${repeatedText}
           </div>
         </div>
       </div>
