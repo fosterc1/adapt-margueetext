@@ -27,9 +27,11 @@ class ScrollMarqueeView extends ComponentView {
     if (data.body) textParts.push(data.body);
     if (data.instruction) textParts.push(data.instruction);
     
-    // Combine with separator (• or | or custom)
+    // Combine with separator - include trailing separator for seamless loop
     const combinedText = textParts.join(' <span class="scroll-marquee__separator">•</span> ');
-    const singleItem = combinedText ? `<div class="scroll-marquee__item">${combinedText}</div>` : '';
+    // Add trailing separator so it looks seamless when repeating
+    const textWithTrailingSeparator = combinedText ? `${combinedText} <span class="scroll-marquee__separator">•</span>` : '';
+    const singleItem = textWithTrailingSeparator ? `<div class="scroll-marquee__item">${textWithTrailingSeparator}</div>` : '';
     
     console.log('ScrollMarquee: Rendering with combined text from', textParts.length, 'fields');
     
