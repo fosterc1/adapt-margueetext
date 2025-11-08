@@ -20,9 +20,9 @@ class ScrollMarqueeView extends ComponentView {
     // Manual render without template system
     const data = this.model.toJSON();
     
-    // Repeat text enough times to fill viewport (GSAP will duplicate further)
+    // Start with just one item - we'll dynamically duplicate after measuring
     const textContent = data.body || '';
-    const repeatedText = textContent ? new Array(10).fill(`<div class="scroll-marquee__item">${textContent}</div>`).join('') : '';
+    const singleItem = textContent ? `<div class="scroll-marquee__item">${textContent}</div>` : '';
     
     const html = `
       <div class="component__inner scroll-marquee__inner-wrapper">
@@ -32,7 +32,7 @@ class ScrollMarqueeView extends ComponentView {
         </div>
         <div class="component__widget scroll-marquee__widget">
           <div class="scroll-marquee__inner">
-            ${repeatedText}
+            ${singleItem}
           </div>
         </div>
       </div>
@@ -102,16 +102,32 @@ class ScrollMarqueeView extends ComponentView {
       return;
     }
 
-    const items = Array.from(marqueeInner.children);
+    const firstItem = marqueeInner.children[0];
     
-    // Only setup marquee if there are items
-    if (items.length === 0) {
+    // Only setup marquee if there is content
+    if (!firstItem) {
       console.warn('ScrollMarquee: No items to display');
       return;
     }
     
-    // Duplicate items for infinite seamless loop
-    items.forEach(el => marqueeInner.appendChild(el.cloneNode(true)));
+    // Calculate how many copies we need to fill viewport width + extra for seamless loop
+    const viewportWidth = window.innerWidth;
+    const itemWidth = firstItem.offsetWidth;
+    
+    if (itemWidth === 0) {
+      console.warn('ScrollMarquee: Item has no width, cannot calculate repetitions');
+      return;
+    }
+    
+    // Calculate copies needed: viewport width * 3 (to ensure coverage during scroll)
+    const copiesNeeded = Math.ceil((viewportWidth * 3) / itemWidth);
+    
+    console.log(`ScrollMarquee: Viewport ${viewportWidth}px, Item ${itemWidth}px, Creating ${copiesNeeded} copies`);
+    
+    // Create the needed copies
+    for (let i = 0; i < copiesNeeded; i++) {
+      marqueeInner.appendChild(firstItem.cloneNode(true));
+    }
 
     let xPos = 0;
     // Convert user-friendly speed (1-5) to actual multiplier
