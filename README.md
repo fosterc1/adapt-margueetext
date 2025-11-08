@@ -1,8 +1,8 @@
 # adapt-scrollMarquee
 
-**Scrolling Marquee Text** is a _presentation component_ which displays a horizontal scrolling marquee of text that responds to scroll velocity.
+**Scrolling Marquee Text** is a _presentation component_ which displays a horizontal scrolling marquee of text with continuous animation that responds to scroll velocity.
 
-The marquee speed is controlled by the user's scroll speed - the faster you scroll, the faster the text moves. The component creates an infinite seamless loop using GSAP ScrollTrigger.
+The marquee continuously scrolls at a base speed, and dynamically adjusts its speed based on the user's scroll velocity - the faster you scroll, the faster the text moves. The component creates an infinite seamless loop using GSAP ScrollTrigger.
 
 [**View the demo**](example/demo.html)
 
@@ -46,12 +46,29 @@ The text to display in the scrolling marquee. This is the standard body field fr
 Determines when Adapt will register this component as having been completed by the learner. Acceptable values are `"inview"` and `"manual"`. The default is `"inview"`.
 
 ### \_speed (number):
-Controls the scroll speed of the marquee. Higher values result in faster movement. The default is `1`. Acceptable range is `1` to `5`.
-- `1` - Slow (recommended starting point)
-- `2` - Medium
-- `3` - Fast
-- `4` - Very fast
-- `5` - Maximum speed
+Controls the base speed of the continuous marquee animation. Higher values result in faster base movement. The default is `1`. Acceptable range is `1` to `5`.
+
+**Base Animation Durations:**
+- `1` - Slow (30 seconds per cycle - recommended starting point)
+- `2` - Medium (15 seconds per cycle)
+- `3` - Fast (10 seconds per cycle)
+- `4` - Very fast (7.5 seconds per cycle)
+- `5` - Maximum speed (6 seconds per cycle)
+
+The marquee continuously animates at this base speed and dynamically speeds up or slows down when the user scrolls.
+
+## How It Works
+
+The component uses a **two-layer animation approach**:
+
+1. **Base Continuous Animation** - The marquee continuously scrolls at a steady base speed (controlled by `_speed`), even when the page is not being scrolled. This ensures the marquee is always visually engaging.
+
+2. **Scroll-Responsive Speed** - When the user scrolls, ScrollTrigger detects the scroll velocity and dynamically adjusts the animation's `timeScale`:
+   - **Scrolling faster** → Marquee speeds up proportionally
+   - **Scrolling slower** → Marquee slows down smoothly
+   - **Not scrolling** → Marquee returns to base speed
+
+This approach ensures the marquee works correctly whether it's visible at page load or scrolled into view later.
 
 ## Dependencies
 
@@ -80,10 +97,10 @@ If you prefer to include GSAP manually, add to your course's `src/core/index.htm
 
 ## Limitations
 
-- Requires sufficient page height for scrolling to trigger the effect
-- Moving text may be difficult to read for some users
+- Continuously animating text may be difficult to read for some users
 - The component automatically handles text duplication for seamless looping
-- Not recommended for critical instructional content due to animation
+- Not recommended for critical instructional content due to continuous animation
+- Animation runs continuously while component is in the DOM (pauses when removed)
 
 ## Browser Support
 
@@ -109,4 +126,4 @@ If you prefer to include GSAP manually, add to your course's `src/core/index.htm
 **Accessibility support:** WAI AA<br>
 **RTL support:** Yes<br>
 **Cross-platform coverage:** Chrome, Chrome for Android, Firefox (ESR + latest version), Edge, Safari for macOS/iOS/iPadOS, Opera<br>
-**Version:** 2.0.0
+**Version:** 3.8.0
