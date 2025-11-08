@@ -1,8 +1,8 @@
 # adapt-scrollMarquee
 
-**Scrolling Marquee Text** is a _presentation component_ which displays a horizontal scrolling marquee of text with continuous animation that responds to scroll velocity.
+**Scrolling Marquee Text** is a _presentation component_ which displays a horizontal scrolling marquee of text that animates in response to page scroll velocity.
 
-The marquee continuously scrolls at a base speed, and dynamically adjusts its speed based on the user's scroll velocity - the faster you scroll, the faster the text moves. The component creates an infinite seamless loop using GSAP ScrollTrigger.
+The marquee moves only when the user scrolls the page - the faster you scroll, the faster the text moves. The component creates an infinite seamless loop using GSAP ScrollTrigger.
 
 [**View the demo**](example/demo.html)
 
@@ -46,29 +46,31 @@ The text to display in the scrolling marquee. This is the standard body field fr
 Determines when Adapt will register this component as having been completed by the learner. Acceptable values are `"inview"` and `"manual"`. The default is `"inview"`.
 
 ### \_speed (number):
-Controls the base speed of the continuous marquee animation. Higher values result in faster base movement. The default is `1`. Acceptable range is `1` to `5`.
+Controls the sensitivity/multiplier for scroll-based movement. Higher values make the marquee more responsive to scroll velocity. The default is `1`. Acceptable range is `1` to `5`.
 
-**Base Animation Durations:**
-- `1` - Slow (30 seconds per cycle - recommended starting point)
-- `2` - Medium (15 seconds per cycle)
-- `3` - Fast (10 seconds per cycle)
-- `4` - Very fast (7.5 seconds per cycle)
-- `5` - Maximum speed (6 seconds per cycle)
+**Speed Multipliers:**
+- `1` - Low sensitivity (subtle movement - recommended starting point)
+- `2` - Medium sensitivity (balanced response)
+- `3` - High sensitivity (noticeable movement)
+- `4` - Very high sensitivity (dramatic movement)
+- `5` - Maximum sensitivity (extreme response to scroll)
 
-The marquee continuously animates at this base speed and dynamically speeds up or slows down when the user scrolls.
+The marquee only moves when the user scrolls the page. Higher `_speed` values amplify the scroll-velocity effect.
 
 ## How It Works
 
-The component uses a **two-layer animation approach**:
+The component uses **scroll-velocity-based animation**:
 
-1. **Base Continuous Animation** - The marquee continuously scrolls at a steady base speed (controlled by `_speed`), even when the page is not being scrolled. This ensures the marquee is always visually engaging.
+- **Scroll Detection** - GSAP ScrollTrigger continuously monitors page scroll velocity
+- **Responsive Movement** - The marquee position updates based on scroll speed:
+  - **Scrolling down** → Marquee moves left
+  - **Scrolling up** → Marquee moves right  
+  - **Faster scroll** → Marquee moves faster
+  - **Not scrolling** → Marquee remains stationary
+- **Seamless Loop** - Text automatically duplicates to create infinite scrolling effect
+- **Speed Control** - The `_speed` setting (1-5) acts as a multiplier for the scroll velocity
 
-2. **Scroll-Responsive Speed** - When the user scrolls, ScrollTrigger detects the scroll velocity and dynamically adjusts the animation's `timeScale`:
-   - **Scrolling faster** → Marquee speeds up proportionally
-   - **Scrolling slower** → Marquee slows down smoothly
-   - **Not scrolling** → Marquee returns to base speed
-
-This approach ensures the marquee works correctly whether it's visible at page load or scrolled into view later.
+The marquee only animates when the user is actively scrolling the page.
 
 ## Dependencies
 
@@ -97,10 +99,11 @@ If you prefer to include GSAP manually, add to your course's `src/core/index.htm
 
 ## Limitations
 
-- Continuously animating text may be difficult to read for some users
+- Requires user to scroll the page to see the marquee animation
+- Moving text during scroll may be distracting for some users
 - The component automatically handles text duplication for seamless looping
-- Not recommended for critical instructional content due to continuous animation
-- Animation runs continuously while component is in the DOM (pauses when removed)
+- Not recommended for critical instructional content that must be read carefully
+- Effect works best on pages with scrollable content
 
 ## Browser Support
 
