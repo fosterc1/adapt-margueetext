@@ -15,20 +15,21 @@ class ScrollMarquee extends ComponentView {
     this.listenTo(this.model, 'change:_isComplete', this.onCompleteChange);
   }
 
-  async postRender() {
+  postRender() {
     this.setReadyStatus();
     
     if (this.model.get('_setCompletionOn') === 'inview') {
-      this.setupInviewCompletion();
+      this.setupInviewCompletion('.component__widget', this.onInview.bind(this));
     }
 
     // Wait for GSAP and ScrollTrigger to be available
-    try {
-      await gsapLoader.load();
-      this.setupMarquee();
-    } catch (error) {
-      console.error('ScrollMarquee: Failed to load GSAP', error);
-    }
+    gsapLoader.load()
+      .then(() => {
+        this.setupMarquee();
+      })
+      .catch((error) => {
+        console.error('ScrollMarquee: Failed to load GSAP', error);
+      });
   }
 
   setupMarquee() {
@@ -43,9 +44,18 @@ class ScrollMarquee extends ComponentView {
     gsap.registerPlugin(ScrollTrigger);
 
     const marqueeInner = this.$('.scroll-marquee__inner')[0];
-    if (!marqueeInner) return;
+    if (!marqueeInner) {
+      console.warn('ScrollMarquee: marquee inner element not found');
+      return;
+    }
 
     const items = Array.from(marqueeInner.children);
+    
+    // Only setup marquee if there are items
+    if (items.length === 0) {
+      console.warn('ScrollMarquee: No items to display');
+      return;
+    }
     
     // Duplicate items for infinite seamless loop
     items.forEach(el => marqueeInner.appendChild(el.cloneNode(true)));
@@ -75,10 +85,6 @@ class ScrollMarquee extends ComponentView {
     });
 
     this.scrollTrigger = ScrollTrigger.getAll().find(st => st.trigger === this.el);
-  }
-
-  setupInviewCompletion() {
-    this.setupInviewCompletion('.component__widget', this.onInview);
   }
 
   onInview() {

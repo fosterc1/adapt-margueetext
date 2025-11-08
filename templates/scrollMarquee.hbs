@@ -5,6 +5,7 @@
 
   <div class="component__widget scroll-marquee__widget">
 
+    {{#if _items}}
     <div class="scroll-marquee__block">
       <div class="scroll-marquee__inner">
         {{#each _items}}
@@ -23,6 +24,11 @@
         {{/each}}
       </div>
     </div>
+    {{else}}
+    <div class="scroll-marquee__placeholder">
+      <p>Please add items to the marquee.</p>
+    </div>
+    {{/if}}
 
   </div>
 
