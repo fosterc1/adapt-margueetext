@@ -103,16 +103,17 @@ class GsapLoader {
           .then(response => response.text())
           .then(code => {
             console.log(`ScrollMarquee: Fetched ${globalName}, evaluating...`);
-            // Wrap in IIFE and force global export
+            // Disable AMD/CommonJS detection and force global mode
             const wrappedCode = `
-              (function(window) {
+              (function() {
                 var define = undefined; // Disable AMD
                 var exports = undefined; // Disable CommonJS
                 var module = undefined;
                 ${code}
-                if (typeof gsap !== 'undefined') window.gsap = gsap;
-                if (typeof ScrollTrigger !== 'undefined') window.ScrollTrigger = ScrollTrigger;
-              })(window);
+                // After execution, attach to window if not already there
+                if (typeof gsap !== 'undefined' && !window.gsap) window.gsap = gsap;
+                if (typeof ScrollTrigger !== 'undefined' && !window.ScrollTrigger) window.ScrollTrigger = ScrollTrigger;
+              })();
             `;
             eval(wrappedCode);
             console.log(`ScrollMarquee: Evaluated ${globalName}`);
