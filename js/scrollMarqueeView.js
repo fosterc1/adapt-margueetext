@@ -170,20 +170,28 @@ class ScrollMarqueeView extends ComponentView {
       onEnter: () => {
         isActive = true;
         lastScrollY = window.pageYOffset || document.documentElement.scrollTop;
-        console.log('ScrollMarquee: Activated');
+        console.log('ScrollMarquee: Activated (onEnter)');
       },
       onLeave: () => {
         isActive = false;
-        console.log('ScrollMarquee: Deactivated');
+        console.log('ScrollMarquee: Deactivated (onLeave)');
       },
       onEnterBack: () => {
         isActive = true;
         lastScrollY = window.pageYOffset || document.documentElement.scrollTop;
-        console.log('ScrollMarquee: Re-activated');
+        console.log('ScrollMarquee: Re-activated (onEnterBack)');
       },
       onLeaveBack: () => {
         isActive = false;
-        console.log('ScrollMarquee: Deactivated (back)');
+        console.log('ScrollMarquee: Deactivated (onLeaveBack)');
+      },
+      onRefresh: (self) => {
+        // Check if already in viewport after refresh
+        if (self.isActive) {
+          isActive = true;
+          lastScrollY = window.pageYOffset || document.documentElement.scrollTop;
+          console.log('ScrollMarquee: Already active after refresh');
+        }
       }
     });
 
@@ -193,8 +201,17 @@ class ScrollMarqueeView extends ComponentView {
     // Store handler reference for cleanup
     this.scrollHandler = handleScroll;
     
-    // Check if already in viewport on init
+    // Refresh ScrollTrigger to check initial state
     ScrollTrigger.refresh();
+    
+    // Additional check: if component is already in viewport, activate immediately
+    setTimeout(() => {
+      if (this.scrollTrigger && this.scrollTrigger.isActive && !isActive) {
+        isActive = true;
+        lastScrollY = window.pageYOffset || document.documentElement.scrollTop;
+        console.log('ScrollMarquee: Force activated (already in viewport)');
+      }
+    }, 100);
   }
 
   onInview() {
