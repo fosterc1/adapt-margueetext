@@ -20,21 +20,21 @@ class ScrollMarqueeView extends ComponentView {
     // Manual render without template system
     const data = this.model.toJSON();
     
-    // Use body if available, fallback to displayTitle for marquee text
-    const textContent = data.body || data.displayTitle || '';
-    const singleItem = textContent ? `<div class="scroll-marquee__item">${textContent}</div>` : '';
+    // Collect all available text fields for the marquee
+    const textParts = [];
+    if (data.title) textParts.push(data.title);
+    if (data.displayTitle) textParts.push(data.displayTitle);
+    if (data.body) textParts.push(data.body);
+    if (data.instruction) textParts.push(data.instruction);
     
-    console.log('ScrollMarquee: Rendering with text:', textContent);
+    // Combine with separator (• or | or custom)
+    const combinedText = textParts.join(' <span class="scroll-marquee__separator">•</span> ');
+    const singleItem = combinedText ? `<div class="scroll-marquee__item">${combinedText}</div>` : '';
     
-    // Only show title in header if we have separate body text for the marquee
-    const showTitleInHeader = data.body && data.displayTitle;
+    console.log('ScrollMarquee: Rendering with combined text from', textParts.length, 'fields');
     
     const html = `
       <div class="component__inner scroll-marquee__inner-wrapper">
-        <div class="component__header">
-          ${showTitleInHeader ? `<div class="component__title">${data.displayTitle}</div>` : ''}
-          ${data.instruction ? `<div class="component__instruction">${data.instruction}</div>` : ''}
-        </div>
         <div class="component__widget scroll-marquee__widget">
           <div class="scroll-marquee__inner">
             ${singleItem}
