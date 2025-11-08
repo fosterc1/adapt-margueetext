@@ -11,7 +11,12 @@ class ScrollMarqueeView extends ComponentView {
     ].join(' ');
   }
 
-  render() {
+  async render() {
+    // Call preRender lifecycle
+    if (this.preRender) {
+      this.preRender();
+    }
+    
     // Manual render without template system
     const data = this.model.toJSON();
     
@@ -30,6 +35,11 @@ class ScrollMarqueeView extends ComponentView {
     
     this.$el.html(html);
     this.$el.addClass(this.className());
+    
+    // Call postRender lifecycle
+    if (this.postRender) {
+      await this.postRender();
+    }
     
     return this;
   }
