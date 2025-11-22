@@ -257,16 +257,25 @@ class ScrollMarqueeView extends ComponentView {
       // Store reference to this component's scrollTrigger for closure
       const scrollTriggerRef = () => this.scrollTrigger;
       let animationFrameCount = 0;
+      let wasActive = false;  // Track previous active state
       
       // Scroll handler that updates position - always runs but checks if component is active
       const handleScroll = () => {
         try {
           // Check if ScrollTrigger is active (component in viewport)
           const trigger = scrollTriggerRef();
-          if (!trigger || !trigger.isActive) {
-            // Update lastScrollY even when not active to prevent jumps
-            lastScrollY = getScrollY();
+          const isActive = trigger && trigger.isActive;
+          
+          if (!isActive) {
+            wasActive = false;
             return;
+          }
+          
+          // If just became active, reset lastScrollY to prevent jump
+          if (!wasActive) {
+            lastScrollY = getScrollY();
+            wasActive = true;
+            return; // Skip first frame to avoid huge delta
           }
           
           const currentScrollY = getScrollY();

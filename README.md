@@ -1,6 +1,6 @@
 # adapt-scrollMarquee
 
-[![Version](https://img.shields.io/badge/version-4.0.5-blue.svg)](https://github.com/fosterc1/adapt-scrollMarquee)
+[![Version](https://img.shields.io/badge/version-4.0.6-blue.svg)](https://github.com/fosterc1/adapt-scrollMarquee)
 [![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)](LICENSE)
 [![Adapt Framework](https://img.shields.io/badge/Adapt-v5.53.3+-orange.svg)](https://github.com/adaptlearning/adapt_framework)
 [![WCAG](https://img.shields.io/badge/WCAG-2.1_AA-brightgreen.svg)](https://www.w3.org/WAI/WCAG21/quickref/)
@@ -407,7 +407,7 @@ This project is licensed under the **GPL-3.0 License** - see the [LICENSE](LICEN
 **Cross-platform coverage:** Chrome 60+, Firefox 55+, Safari 12+, Edge 79+, Chrome Mobile, iOS Safari 12+<br>
 **Adapt Framework:** v5.53.3+<br>
 **Adapt Authoring Tool:** v0.11.5+<br>
-**Version:** 4.0.5<br>
+**Version:** 4.0.6<br>
 **Overall Rating:** 9.2/10 (A) - Production Ready
 
 ---
