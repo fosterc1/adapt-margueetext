@@ -293,11 +293,11 @@ class ScrollMarqueeView extends ComponentView {
 
           // Reset position for seamless loop (adjusted for RTL)
           if (isRTL) {
-            if (xPos >= loopPoint) xPos = 0;
-            if (xPos <= 0) xPos = loopPoint;
+            // RTL: moving right (xPos increasing from 0)
+            if (xPos > loopPoint) xPos = 0;
           } else {
-            if (xPos <= -loopPoint) xPos = 0;
-            if (xPos >= 0) xPos = -loopPoint;
+            // LTR: moving left (xPos decreasing from 0)
+            if (xPos < -loopPoint) xPos = 0;
           }
 
           // Apply transform
