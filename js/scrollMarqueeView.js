@@ -276,7 +276,8 @@ class ScrollMarqueeView extends ComponentView {
           // Log first few animation frames for debugging
           animationFrameCount++;
           if (animationFrameCount <= 3) {
-            console.log(`ScrollMarquee [${componentId}]: Animating frame ${animationFrameCount}, scrollDelta: ${scrollDelta}`);\n          }
+            console.log(`ScrollMarquee [${componentId}]: Animating frame ${animationFrameCount}, scrollDelta: ${scrollDelta}`);
+          }
           
           // Update position based on scroll delta (with RTL direction support)
           xPos += directionMultiplier * scrollDelta * speedMultiplier;
