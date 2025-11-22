@@ -174,6 +174,10 @@ class ScrollMarqueeView extends ComponentView {
         return;
       }
 
+      // Generate unique ID for debugging
+      const componentId = this.model.get('_id');
+      console.log(`ScrollMarquee [${componentId}]: Setting up animation`);
+
       // Check for manual animation disable or prefers-reduced-motion
       const manualDisable = this.model.get('_disableAnimation');
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -250,11 +254,16 @@ class ScrollMarqueeView extends ComponentView {
       const marqueeElement = marqueeInner;
       const loopPoint = marqueeInner.offsetWidth / 2;
 
+      // Store reference to this component's scrollTrigger for closure
+      const scrollTriggerRef = () => this.scrollTrigger;
+      let animationFrameCount = 0;
+      
       // Scroll handler that updates position - always runs but checks if component is active
       const handleScroll = () => {
         try {
           // Check if ScrollTrigger is active (component in viewport)
-          if (!this.scrollTrigger || !this.scrollTrigger.isActive) {
+          const trigger = scrollTriggerRef();
+          if (!trigger || !trigger.isActive) {
             // Update lastScrollY even when not active to prevent jumps
             lastScrollY = getScrollY();
             return;
@@ -263,6 +272,11 @@ class ScrollMarqueeView extends ComponentView {
           const currentScrollY = getScrollY();
           const scrollDelta = currentScrollY - lastScrollY;
           lastScrollY = currentScrollY;
+          
+          // Log first few animation frames for debugging
+          animationFrameCount++;
+          if (animationFrameCount <= 3) {
+            console.log(`ScrollMarquee [${componentId}]: Animating frame ${animationFrameCount}, scrollDelta: ${scrollDelta}`);\n          }
           
           // Update position based on scroll delta (with RTL direction support)
           xPos += directionMultiplier * scrollDelta * speedMultiplier;
@@ -290,9 +304,11 @@ class ScrollMarqueeView extends ComponentView {
         end: 'bottom top',
         onToggle: (self) => {
           // This fires whenever the active state changes
-          console.log('ScrollMarquee: isActive =', self.isActive);
+          console.log(`ScrollMarquee [${componentId}]: isActive =`, self.isActive);
         }
       });
+      
+      console.log(`ScrollMarquee [${componentId}]: ScrollTrigger created, trigger element:`, this.el);
 
       // Add global scroll listener - always active, but checks viewport inside
       window.addEventListener('scroll', handleScroll, { passive: true });
