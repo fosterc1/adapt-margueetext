@@ -1,6 +1,6 @@
 # adapt-scrollMarquee
 
-[![Version](https://img.shields.io/badge/version-4.0.1-blue.svg)](https://github.com/fosterc1/adapt-scrollMarquee)
+[![Version](https://img.shields.io/badge/version-4.0.2-blue.svg)](https://github.com/fosterc1/adapt-scrollMarquee)
 [![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)](LICENSE)
 [![Adapt Framework](https://img.shields.io/badge/Adapt-v5.53.3+-orange.svg)](https://github.com/adaptlearning/adapt_framework)
 [![WCAG](https://img.shields.io/badge/WCAG-2.1_AA-brightgreen.svg)](https://www.w3.org/WAI/WCAG21/quickref/)
@@ -290,6 +290,18 @@ The component uses **CSS Custom Properties** for easy styling customization. All
 
 ## 📝 Changelog
 
+### v4.0.2 (2025-11-22) - AAT Testing Release
+
+**🔧 Maintenance:**
+- ✅ **Version Bump** - Prepared for Adapt Authoring Tool testing and upload
+- ✅ **No Code Changes** - Identical functionality to v4.0.1
+- ✅ **Testing Version** - Ready for AAT compatibility verification
+
+**Purpose:**
+- Separate version for testing in Adapt Authoring Tool (AAT)
+- Ensures clean upload and compatibility verification
+- Maintains all v4.0.1 features and improvements
+
 ### v4.0.1 (2025-11-22) - Major Architecture Update
 
 **🔴 Breaking Changes:**
@@ -395,7 +407,7 @@ This project is licensed under the **GPL-3.0 License** - see the [LICENSE](LICEN
 **Cross-platform coverage:** Chrome 60+, Firefox 55+, Safari 12+, Edge 79+, Chrome Mobile, iOS Safari 12+<br>
 **Adapt Framework:** v5.53.3+<br>
 **Adapt Authoring Tool:** v0.11.5+<br>
-**Version:** 4.0.1<br>
+**Version:** 4.0.2<br>
 **Overall Rating:** 9.2/10 (A) - Production Ready
 
 ---
