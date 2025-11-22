@@ -319,6 +319,9 @@ class ScrollMarqueeView extends ComponentView {
       });
       
       console.log(`ScrollMarquee [${componentId}]: ScrollTrigger created, trigger element:`, this.el);
+      
+      // CRITICAL: Refresh ScrollTrigger to ensure it calculates positions correctly
+      ScrollTrigger.refresh();
 
       // Add global scroll listener - always active, but checks viewport inside
       window.addEventListener('scroll', handleScroll, { passive: true });
