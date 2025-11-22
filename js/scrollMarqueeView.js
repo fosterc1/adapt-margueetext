@@ -283,19 +283,25 @@ class ScrollMarqueeView extends ComponentView {
         }
       };
 
-      // Use ScrollTrigger to determine when component is in viewport
-      this.scrollTrigger = ScrollTrigger.create({
-        trigger: this.el,
-        start: 'top bottom',
-        end: 'bottom top',
-        onToggle: (self) => {
-          // This fires whenever the active state changes
-          console.log('ScrollMarquee: isActive =', self.isActive);
-        }
-      });
-
       // Add global scroll listener - always active, but checks viewport inside
       window.addEventListener('scroll', handleScroll, { passive: true });
+
+      // Defer ScrollTrigger creation to next frame to ensure DOM is fully laid out
+      // This prevents issues when multiple components create ScrollTriggers simultaneously
+      requestAnimationFrame(() => {
+        this.scrollTrigger = ScrollTrigger.create({
+          trigger: this.el,
+          start: 'top bottom',
+          end: 'bottom top',
+          onToggle: (self) => {
+            // This fires whenever the active state changes
+            console.log('ScrollMarquee: isActive =', self.isActive);
+          }
+        });
+        
+        // Refresh all ScrollTriggers to ensure accurate positions
+        ScrollTrigger.refresh();
+      });
       
       // Store handler reference for cleanup
       this.scrollHandler = handleScroll;
