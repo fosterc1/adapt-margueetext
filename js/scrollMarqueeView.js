@@ -1,5 +1,6 @@
 import ComponentView from 'core/js/views/componentView';
 import a11y from 'core/js/a11y';
+import gsapLoader from './gsapLoader';
 
 
 class ScrollMarqueeView extends ComponentView {
@@ -105,7 +106,6 @@ class ScrollMarqueeView extends ComponentView {
     
     if (this.model.get('_setCompletionOn') === 'inview') {
       this.setupInviewCompletion('.scrollmarquee__widget', this.onInview.bind(this));
-      
     }
 
     // Check if GSAP is already available (user might have included it)
@@ -114,6 +114,18 @@ class ScrollMarqueeView extends ComponentView {
       this.setupMarquee();
       return;
     }
+
+    // Load GSAP asynchronously - component already ready
+    console.log('ScrollMarquee: Loading GSAP from CDN...');
+    gsapLoader.load()
+      .then(() => {
+        console.log('ScrollMarquee: GSAP loaded, setting up marquee');
+        this.setupMarquee();
+      })
+      .catch((error) => {
+        console.error('ScrollMarquee: Animation disabled - GSAP failed to load', error);
+        this.handleError('GSAP_LOAD_FAILED', 'Failed to load animation library', error);
+      });
   }
 
   /**
