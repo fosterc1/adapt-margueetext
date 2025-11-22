@@ -249,6 +249,13 @@ class ScrollMarqueeView extends ComponentView {
       // Store reference to the marqueeInner
       const marqueeElement = marqueeInner;
       const loopPoint = marqueeInner.offsetWidth / 2;
+      
+      // Get unique component ID for debugging
+      const componentId = this.model.get('_id');
+      console.log(`ScrollMarquee [${componentId}]: Setting up scroll handler`);
+      
+      // Track animation frames for debugging
+      let animationFrameCount = 0;
 
       // Scroll handler that updates position - always runs but checks if component is active
       const handleScroll = () => {
@@ -263,6 +270,12 @@ class ScrollMarqueeView extends ComponentView {
           const currentScrollY = getScrollY();
           const scrollDelta = currentScrollY - lastScrollY;
           lastScrollY = currentScrollY;
+          
+          // Log first few frames for debugging
+          animationFrameCount++;
+          if (animationFrameCount <= 3) {
+            console.log(`ScrollMarquee [${componentId}]: Animating frame ${animationFrameCount}, delta: ${scrollDelta}`);
+          }
           
           // Update position based on scroll delta (with RTL direction support)
           xPos += directionMultiplier * scrollDelta * speedMultiplier;
@@ -295,7 +308,7 @@ class ScrollMarqueeView extends ComponentView {
           end: 'bottom top',
           onToggle: (self) => {
             // This fires whenever the active state changes
-            console.log('ScrollMarquee: isActive =', self.isActive);
+            console.log(`ScrollMarquee [${componentId}]: isActive =`, self.isActive);
           }
         });
         

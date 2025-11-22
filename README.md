@@ -1,6 +1,6 @@
 # adapt-scrollMarquee
 
-[![Version](https://img.shields.io/badge/version-4.0.11-blue.svg)](https://github.com/fosterc1/adapt-scrollMarquee)
+[![Version](https://img.shields.io/badge/version-4.0.12-blue.svg)](https://github.com/fosterc1/adapt-scrollMarquee)
 [![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)](LICENSE)
 [![Adapt Framework](https://img.shields.io/badge/Adapt-v5.53.3+-orange.svg)](https://github.com/adaptlearning/adapt_framework)
 [![WCAG](https://img.shields.io/badge/WCAG-2.1_AA-brightgreen.svg)](https://www.w3.org/WAI/WCAG21/quickref/)
