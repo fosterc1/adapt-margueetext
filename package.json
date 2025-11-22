@@ -1,6 +1,6 @@
 {
   "name": "adapt-scrollMarquee",
-  "version": "4.0.12",
+  "version": "4.1.0",
   "description": "A scroll-velocity-based marquee component with RTL support, WCAG 2.1 AA accessibility, and GSAP ScrollTrigger animations",
   "main": "js/adapt-scrollMarquee.js",
   "keywords": [

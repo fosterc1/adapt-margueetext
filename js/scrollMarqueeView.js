@@ -260,8 +260,16 @@ class ScrollMarqueeView extends ComponentView {
       // Scroll handler that updates position - always runs but checks if component is active
       const handleScroll = () => {
         try {
+          // Check if ScrollTrigger exists and is still valid
+          // It might get killed by ScrollTrigger.refresh() from other components
+          if (!this.scrollTrigger || this.scrollTrigger.isActive === undefined) {
+            // ScrollTrigger was killed or doesn't exist, update lastScrollY and skip
+            lastScrollY = getScrollY();
+            return;
+          }
+          
           // Check if ScrollTrigger is active (component in viewport)
-          if (!this.scrollTrigger || !this.scrollTrigger.isActive) {
+          if (!this.scrollTrigger.isActive) {
             // Update lastScrollY even when not active to prevent jumps
             lastScrollY = getScrollY();
             return;
@@ -299,9 +307,13 @@ class ScrollMarqueeView extends ComponentView {
       // Add global scroll listener - always active, but checks viewport inside
       window.addEventListener('scroll', handleScroll, { passive: true });
 
-      // Defer ScrollTrigger creation to next frame to ensure DOM is fully laid out
-      // This prevents issues when multiple components create ScrollTriggers simultaneously
-      requestAnimationFrame(() => {
+      // Function to create/recreate ScrollTrigger (in case it gets killed by other components)
+      const createScrollTrigger = () => {
+        // Kill existing trigger if it exists
+        if (this.scrollTrigger) {
+          this.scrollTrigger.kill();
+        }
+        
         this.scrollTrigger = ScrollTrigger.create({
           trigger: this.el,
           start: 'top bottom',
@@ -309,10 +321,30 @@ class ScrollMarqueeView extends ComponentView {
           onToggle: (self) => {
             // This fires whenever the active state changes
             console.log(`ScrollMarquee [${componentId}]: isActive =`, self.isActive);
+          },
+          // Mark this trigger so we can identify it
+          id: `scrollmarquee-${componentId}`
+        });
+        
+        console.log(`ScrollMarquee [${componentId}]: ScrollTrigger created/recreated`);
+      };
+      
+      // Defer ScrollTrigger creation to next frame to ensure DOM is fully laid out
+      // This prevents issues when multiple components create ScrollTriggers simultaneously
+      requestAnimationFrame(() => {
+        createScrollTrigger();
+        
+        // Listen for ScrollTrigger refresh events from other components
+        // If our trigger gets killed, recreate it
+        ScrollTrigger.addEventListener('refresh', () => {
+          // Check if our trigger still exists and is valid
+          if (!this.scrollTrigger || this.scrollTrigger.isActive === undefined) {
+            console.log(`ScrollMarquee [${componentId}]: ScrollTrigger was killed by refresh, recreating...`);
+            createScrollTrigger();
           }
         });
         
-        // Refresh all ScrollTriggers to ensure accurate positions
+        // Initial refresh to ensure accurate positions
         ScrollTrigger.refresh();
       });
       
