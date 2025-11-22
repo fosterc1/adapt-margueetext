@@ -174,10 +174,6 @@ class ScrollMarqueeView extends ComponentView {
         return;
       }
 
-      // Generate unique ID for debugging
-      const componentId = this.model.get('_id');
-      console.log(`ScrollMarquee [${componentId}]: Setting up animation`);
-
       // Check for manual animation disable or prefers-reduced-motion
       const manualDisable = this.model.get('_disableAnimation');
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -244,7 +240,7 @@ class ScrollMarqueeView extends ComponentView {
       let xPos = 0;
       // Support multiple scroll position methods for cross-browser compatibility
       const getScrollY = () => window.pageYOffset || window.scrollY || document.documentElement.scrollTop || 0;
-      let lastScrollY = 0;  // Initialize to 0, will be set when component becomes active
+      let lastScrollY = getScrollY();
       
       // Convert user-friendly speed (1-5) to actual multiplier
       const userSpeed = this.model.get('_speed') || 1;
@@ -254,50 +250,30 @@ class ScrollMarqueeView extends ComponentView {
       const marqueeElement = marqueeInner;
       const loopPoint = marqueeInner.offsetWidth / 2;
 
-      // Store reference to this component's scrollTrigger for closure
-      const scrollTriggerRef = () => this.scrollTrigger;
-      let animationFrameCount = 0;
-      let wasActive = false;  // Track previous active state
-      
       // Scroll handler that updates position - always runs but checks if component is active
       const handleScroll = () => {
         try {
           // Check if ScrollTrigger is active (component in viewport)
-          const trigger = scrollTriggerRef();
-          const isActive = trigger && trigger.isActive;
-          
-          if (!isActive) {
-            wasActive = false;
-            return;
-          }
-          
-          // If just became active, reset lastScrollY to prevent jump
-          if (!wasActive) {
+          if (!this.scrollTrigger || !this.scrollTrigger.isActive) {
+            // Update lastScrollY even when not active to prevent jumps
             lastScrollY = getScrollY();
-            wasActive = true;
-            return; // Skip first frame to avoid huge delta
+            return;
           }
           
           const currentScrollY = getScrollY();
           const scrollDelta = currentScrollY - lastScrollY;
           lastScrollY = currentScrollY;
           
-          // Log first few animation frames for debugging
-          animationFrameCount++;
-          if (animationFrameCount <= 3) {
-            console.log(`ScrollMarquee [${componentId}]: Animating frame ${animationFrameCount}, scrollDelta: ${scrollDelta}`);
-          }
-          
           // Update position based on scroll delta (with RTL direction support)
           xPos += directionMultiplier * scrollDelta * speedMultiplier;
 
           // Reset position for seamless loop (adjusted for RTL)
           if (isRTL) {
-            // RTL: moving right (xPos increasing from 0)
-            if (xPos > loopPoint) xPos = 0;
+            if (xPos >= loopPoint) xPos = 0;
+            if (xPos <= 0) xPos = loopPoint;
           } else {
-            // LTR: moving left (xPos decreasing from 0)
-            if (xPos < -loopPoint) xPos = 0;
+            if (xPos <= -loopPoint) xPos = 0;
+            if (xPos >= 0) xPos = -loopPoint;
           }
 
           // Apply transform
@@ -314,14 +290,9 @@ class ScrollMarqueeView extends ComponentView {
         end: 'bottom top',
         onToggle: (self) => {
           // This fires whenever the active state changes
-          console.log(`ScrollMarquee [${componentId}]: isActive =`, self.isActive);
+          console.log('ScrollMarquee: isActive =', self.isActive);
         }
       });
-      
-      console.log(`ScrollMarquee [${componentId}]: ScrollTrigger created, trigger element:`, this.el);
-      
-      // CRITICAL: Refresh ScrollTrigger to ensure it calculates positions correctly
-      ScrollTrigger.refresh();
 
       // Add global scroll listener - always active, but checks viewport inside
       window.addEventListener('scroll', handleScroll, { passive: true });
