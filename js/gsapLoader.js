@@ -21,7 +21,10 @@ class GsapLoader {
     }
 
     // If already loading, return existing promise
-    if (this.loadPromise) return this.loadPromise;
+    if (this.loadPromise) {
+      console.log('ScrollMarquee: GSAP already loading, returning existing promise');
+      return this.loadPromise;
+    }
 
     this.loadPromise = new Promise((resolve, reject) => {
       const loadScript = (src, description) => {

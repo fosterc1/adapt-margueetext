@@ -1,7 +1,7 @@
-.scroll-marquee {
+.scrollmarquee {
   // CSS Custom Properties for easy customization
   --marquee-font-size: 1.5rem;
-  --marquee-font-weight: 600;
+  --marquee-font-weight: 400;
   --marquee-font-family: inherit;
   --marquee-text-color: inherit;
   --marquee-text-transform: none;
@@ -22,6 +22,10 @@
     position: relative;
   }
 
+  &__inner-wrapper {
+    padding: 0 !important;
+  }
+  
   &__inner {
     display: flex;
     width: max-content;
@@ -116,19 +120,6 @@
         display: none;
       }
     }
-  }
-
-  // Responsive adjustments
-  @media (max-width: 900px) {
-    --marquee-font-size: 1.35rem;
-    --marquee-gap: 1.5rem;
-    --marquee-padding: 1.5rem;
-  }
-
-  @media (max-width: 520px) {
-    --marquee-font-size: 1.2rem;
-    --marquee-gap: 1rem;
-    --marquee-padding: 1rem;
   }
 
   // Respect prefers-reduced-motion at CSS level too

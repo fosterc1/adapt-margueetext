@@ -2,14 +2,8 @@ import ComponentView from 'core/js/views/componentView';
 import a11y from 'core/js/a11y';
 import gsapLoader from './gsapLoader';
 
-class ScrollMarqueeView extends ComponentView {
 
-  className() {
-    return [
-      super.className(),
-      'scroll-marquee'
-    ].join(' ');
-  }
+class ScrollMarqueeView extends ComponentView {
 
   render() {
     // Call preRender lifecycle
@@ -22,7 +16,7 @@ class ScrollMarqueeView extends ComponentView {
     
     // Use only body text for the marquee
     const bodyText = data.body || '';
-    const singleItem = bodyText ? `<div class="scroll-marquee__item">${bodyText}</div>` : '';
+    const singleItem = bodyText ? `<div class="scrollmarquee__item">${bodyText}</div>` : '';
     
     console.log('ScrollMarquee: Rendering with body text:', bodyText.substring(0, 50) + '...');
     
@@ -37,12 +31,12 @@ class ScrollMarqueeView extends ComponentView {
     
     // FIX: Moving content should be aria-hidden="true" to prevent duplicate announcements
     const html = `
-      <div class="component__inner scroll-marquee__inner-wrapper">
-        <div class="component__widget scroll-marquee__widget" 
+      <div class="component__inner scrollmarquee__inner-wrapper">
+        <div class="component__widget scrollmarquee__widget" 
              role="region" 
              aria-label="${ariaLabel}"
              aria-live="polite"${dirAttribute}>
-          <div class="scroll-marquee__inner" aria-hidden="true">
+          <div class="scrollmarquee__inner" aria-hidden="true">
             ${singleItem}
           </div>
         </div>
@@ -57,7 +51,7 @@ class ScrollMarqueeView extends ComponentView {
     
     // Add accessible text for screen readers (non-moving version)
     if (bodyText) {
-      const srOnly = `<div class="scroll-marquee__sr-only" aria-hidden="false">${bodyText}</div>`;
+      const srOnly = `<div class="scrollmarquee__sr-only" aria-hidden="false">${bodyText}</div>`;
       this.$('.component__widget').append(srOnly);
     }
     
@@ -111,7 +105,7 @@ class ScrollMarqueeView extends ComponentView {
     this.setReadyStatus();
     
     if (this.model.get('_setCompletionOn') === 'inview') {
-      this.setupInviewCompletion('.component__widget', this.onInview.bind(this));
+      this.setupInviewCompletion('.scrollmarquee__widget', this.onInview.bind(this));
     }
 
     // Check if GSAP is already available (user might have included it)
@@ -126,7 +120,13 @@ class ScrollMarqueeView extends ComponentView {
     gsapLoader.load()
       .then(() => {
         console.log('ScrollMarquee: GSAP loaded, setting up marquee');
-        this.setupMarquee();
+        // Double-check GSAP is actually available
+        if (window.gsap && window.ScrollTrigger) {
+          this.setupMarquee();
+        } else {
+          console.error('ScrollMarquee: GSAP Promise resolved but window.gsap not available!');
+          this.handleError('GSAP_NOT_FOUND', 'Animation library loaded but not accessible');
+        }
       })
       .catch((error) => {
         console.error('ScrollMarquee: Animation disabled - GSAP failed to load', error);
@@ -144,13 +144,13 @@ class ScrollMarqueeView extends ComponentView {
     console.error(`ScrollMarquee Error [${errorCode}]: ${message}`, error);
     
     // Add error state CSS class
-    this.$el.addClass('scroll-marquee--error');
+    this.$el.addClass('scrollmarquee--error');
     this.$el.attr('data-error-code', errorCode);
     
     // Display user-friendly error message
     const errorHtml = `
-      <div class="scroll-marquee__error" role="alert">
-        <p class="scroll-marquee__error-message">
+      <div class="scrollmarquee__error" role="alert">
+        <p class="scrollmarquee__error-message">
           ${message}
         </p>
       </div>
@@ -182,15 +182,15 @@ class ScrollMarqueeView extends ComponentView {
         const reason = manualDisable ? 'manually disabled' : 'reduced motion preference detected';
         console.log(`ScrollMarquee: Animation ${reason} - displaying static content`);
         // Add class to indicate reduced motion mode
-        this.$el.addClass('scroll-marquee--reduced-motion');
+        this.$el.addClass('scrollmarquee--reduced-motion');
         // Make marquee content static and accessible
-        this.$('.scroll-marquee__inner').attr('aria-hidden', 'false');
+        this.$('.scrollmarquee__inner').attr('aria-hidden', 'false');
         return;
       }
 
       gsap.registerPlugin(ScrollTrigger);
 
-      const marqueeInner = this.$('.scroll-marquee__inner')[0];
+      const marqueeInner = this.$('.scrollmarquee__inner')[0];
       if (!marqueeInner) {
         this.handleError('ELEMENT_NOT_FOUND', 'Marquee element not found');
         return;
@@ -212,6 +212,7 @@ class ScrollMarqueeView extends ComponentView {
       const viewportWidth = window.innerWidth;
       const itemWidth = firstItem.offsetWidth;
       
+        
       if (itemWidth === 0) {
         console.warn('ScrollMarquee: Item has no width, cannot calculate repetitions');
         return;
@@ -248,12 +249,27 @@ class ScrollMarqueeView extends ComponentView {
       // Store reference to the marqueeInner
       const marqueeElement = marqueeInner;
       const loopPoint = marqueeInner.offsetWidth / 2;
+      
+      // Get unique component ID for debugging
+      const componentId = this.model.get('_id');
+      console.log(`ScrollMarquee [${componentId}]: Setting up scroll handler`);
+      
+      // Track animation frames for debugging
+      let animationFrameCount = 0;
 
       // Scroll handler that updates position - always runs but checks if component is active
       const handleScroll = () => {
         try {
+          // Check if ScrollTrigger exists and is still valid
+          // It might get killed by ScrollTrigger.refresh() from other components
+          if (!this.scrollTrigger || this.scrollTrigger.isActive === undefined) {
+            // ScrollTrigger was killed or doesn't exist, update lastScrollY and skip
+            lastScrollY = getScrollY();
+            return;
+          }
+          
           // Check if ScrollTrigger is active (component in viewport)
-          if (!this.scrollTrigger || !this.scrollTrigger.isActive) {
+          if (!this.scrollTrigger.isActive) {
             // Update lastScrollY even when not active to prevent jumps
             lastScrollY = getScrollY();
             return;
@@ -262,6 +278,12 @@ class ScrollMarqueeView extends ComponentView {
           const currentScrollY = getScrollY();
           const scrollDelta = currentScrollY - lastScrollY;
           lastScrollY = currentScrollY;
+          
+          // Log first few frames for debugging
+          animationFrameCount++;
+          if (animationFrameCount <= 3) {
+            console.log(`ScrollMarquee [${componentId}]: Animating frame ${animationFrameCount}, delta: ${scrollDelta}`);
+          }
           
           // Update position based on scroll delta (with RTL direction support)
           xPos += directionMultiplier * scrollDelta * speedMultiplier;
@@ -282,19 +304,49 @@ class ScrollMarqueeView extends ComponentView {
         }
       };
 
-      // Use ScrollTrigger to determine when component is in viewport
-      this.scrollTrigger = ScrollTrigger.create({
-        trigger: this.el,
-        start: 'top bottom',
-        end: 'bottom top',
-        onToggle: (self) => {
-          // This fires whenever the active state changes
-          console.log('ScrollMarquee: isActive =', self.isActive);
-        }
-      });
-
       // Add global scroll listener - always active, but checks viewport inside
       window.addEventListener('scroll', handleScroll, { passive: true });
+
+      // Function to create/recreate ScrollTrigger (in case it gets killed by other components)
+      const createScrollTrigger = () => {
+        // Kill existing trigger if it exists
+        if (this.scrollTrigger) {
+          this.scrollTrigger.kill();
+        }
+        
+        this.scrollTrigger = ScrollTrigger.create({
+          trigger: this.el,
+          start: 'top bottom',
+          end: 'bottom top',
+          onToggle: (self) => {
+            // This fires whenever the active state changes
+            console.log(`ScrollMarquee [${componentId}]: isActive =`, self.isActive);
+          },
+          // Mark this trigger so we can identify it
+          id: `scrollmarquee-${componentId}`
+        });
+        
+        console.log(`ScrollMarquee [${componentId}]: ScrollTrigger created/recreated`);
+      };
+      
+      // Defer ScrollTrigger creation to next frame to ensure DOM is fully laid out
+      // This prevents issues when multiple components create ScrollTriggers simultaneously
+      requestAnimationFrame(() => {
+        createScrollTrigger();
+        
+        // Listen for ScrollTrigger refresh events from other components
+        // If our trigger gets killed, recreate it
+        ScrollTrigger.addEventListener('refresh', () => {
+          // Check if our trigger still exists and is valid
+          if (!this.scrollTrigger || this.scrollTrigger.isActive === undefined) {
+            console.log(`ScrollMarquee [${componentId}]: ScrollTrigger was killed by refresh, recreating...`);
+            createScrollTrigger();
+          }
+        });
+        
+        // Initial refresh to ensure accurate positions
+        ScrollTrigger.refresh();
+      });
       
       // Store handler reference for cleanup
       this.scrollHandler = handleScroll;
@@ -342,7 +394,7 @@ class ScrollMarqueeView extends ComponentView {
 
   onCompleteChange(model, isComplete) {
     if (!isComplete) return;
-    a11y.toggleAccessibleEnabled(this.$('.scroll-marquee__item'), true);
+    a11y.toggleAccessibleEnabled(this.$('.scrollmarquee__item'), true);
   }
 
   remove() {

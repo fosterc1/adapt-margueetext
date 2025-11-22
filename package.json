@@ -1,7 +1,7 @@
 {
   "name": "adapt-scrollMarquee",
-  "version": "3.12.0",
-  "description": "A scroll-velocity-based marquee component using GSAP ScrollTrigger",
+  "version": "4.1.0",
+  "description": "A scroll-velocity-based marquee component with RTL support, WCAG 2.1 AA accessibility, and GSAP ScrollTrigger animations",
   "main": "js/adapt-scrollMarquee.js",
   "keywords": [
     "adapt-plugin",
@@ -9,9 +9,13 @@
     "marquee",
     "scroll",
     "gsap",
-    "scrolltrigger"
+    "scrolltrigger",
+    "accessibility",
+    "wcag",
+    "rtl",
+    "animation"
   ],
-  "author": "Your Name",
+  "author": "fosterc1",
   "license": "GPL-3.0",
   "framework": ">=5.0.0",
   "peerDependencies": {
