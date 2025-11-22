@@ -120,7 +120,13 @@ class ScrollMarqueeView extends ComponentView {
     gsapLoader.load()
       .then(() => {
         console.log('ScrollMarquee: GSAP loaded, setting up marquee');
-        this.setupMarquee();
+        // Double-check GSAP is actually available
+        if (window.gsap && window.ScrollTrigger) {
+          this.setupMarquee();
+        } else {
+          console.error('ScrollMarquee: GSAP Promise resolved but window.gsap not available!');
+          this.handleError('GSAP_NOT_FOUND', 'Animation library loaded but not accessible');
+        }
       })
       .catch((error) => {
         console.error('ScrollMarquee: Animation disabled - GSAP failed to load', error);
