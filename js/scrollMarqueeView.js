@@ -244,7 +244,7 @@ class ScrollMarqueeView extends ComponentView {
       let xPos = 0;
       // Support multiple scroll position methods for cross-browser compatibility
       const getScrollY = () => window.pageYOffset || window.scrollY || document.documentElement.scrollTop || 0;
-      let lastScrollY = getScrollY();
+      let lastScrollY = 0;  // Initialize to 0, will be set when component becomes active
       
       // Convert user-friendly speed (1-5) to actual multiplier
       const userSpeed = this.model.get('_speed') || 1;
