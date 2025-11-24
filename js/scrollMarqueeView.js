@@ -384,8 +384,8 @@ class ScrollMarqueeView extends ComponentView {
       window.addEventListener('resize', handleResize, { passive: true });
       this.resizeHandler = handleResize;
       
-      // Setup orientation change handler for mobile devices
-      this.setupOrientationHandler();
+      // REMOVED: Native orientation change handler (now handled by Adapt's device:changed event)
+      // this.setupOrientationHandler();
       
     } catch (error) {
       console.error('ScrollMarquee: Critical error in setupMarquee:', error);
@@ -403,34 +403,8 @@ class ScrollMarqueeView extends ComponentView {
     a11y.toggleAccessibleEnabled(this.$('.scrollmarquee__item'), true);
   }
 
-  /**
-   * Setup orientation change handler for mobile devices
-   * Detects when device rotates between portrait and landscape
-   */
-  setupOrientationHandler() {
-    // Modern browsers - use screen.orientation API
-    if (window.screen && window.screen.orientation) {
-      this.orientationHandler = () => {
-        console.log('ScrollMarquee: Orientation changed (modern API), recalculating dimensions...');
-        // Small delay to allow browser to complete orientation transition
-        setTimeout(() => {
-          this.recalculateMarqueeDimensions();
-        }, 300);
-      };
-      window.screen.orientation.addEventListener('change', this.orientationHandler);
-      console.log('ScrollMarquee: Modern orientation change listener added');
-    } else {
-      // Legacy browsers - use orientationchange event
-      this.orientationHandler = () => {
-        console.log('ScrollMarquee: Orientation changed (legacy), recalculating dimensions...');
-        setTimeout(() => {
-          this.recalculateMarqueeDimensions();
-        }, 300);
-      };
-      window.addEventListener('orientationchange', this.orientationHandler);
-      console.log('ScrollMarquee: Legacy orientation change listener added');
-    }
-  }
+  // REMOVED: Native orientation change handler - now relying on Adapt's device:changed event
+  // setupOrientationHandler() { ... }
 
   /**
    * Recalculate marquee dimensions after orientation change
@@ -502,18 +476,7 @@ class ScrollMarqueeView extends ComponentView {
       window.removeEventListener('resize', this.resizeHandler);
     }
     
-    // Clean up orientation change handler
-    if (this.orientationHandler) {
-      if (window.screen && window.screen.orientation) {
-        // Modern API
-        window.screen.orientation.removeEventListener('change', this.orientationHandler);
-        console.log('ScrollMarquee: Modern orientation change listener removed');
-      } else {
-        // Legacy API
-        window.removeEventListener('orientationchange', this.orientationHandler);
-        console.log('ScrollMarquee: Legacy orientation change listener removed');
-      }
-    }
+    // REMOVED: Orientation change handler cleanup (no longer needed)
     
     super.remove();
   }
