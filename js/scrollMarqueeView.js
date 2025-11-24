@@ -1,4 +1,5 @@
 import ComponentView from 'core/js/views/componentView';
+import Adapt from 'core/js/adapt';
 import a11y from 'core/js/a11y';
 import gsapLoader from './gsapLoader';
 
@@ -96,6 +97,26 @@ class ScrollMarqueeView extends ComponentView {
 
   preRender() {
     this.listenTo(this.model, 'change:_isComplete', this.onCompleteChange);
+    
+    // Listen to Adapt's device:changed event with debouncing + RAF batching
+    // This prevents visual "page refresh" when multiple marquees exist
+    this._debouncedDeviceChanged = _.debounce(this.onDeviceChanged.bind(this), 500);
+    this.listenTo(Adapt, 'device:changed', this._debouncedDeviceChanged);
+  }
+  
+  onDeviceChanged(screenSize) {
+    console.log('ScrollMarquee: device:changed - screenSize:', screenSize, 'viewport:', window.innerWidth + 'px');
+    
+    // Use requestAnimationFrame to batch all marquee updates together
+    // This prevents visual "page refresh" when multiple marquees update simultaneously
+    if (this._deviceChangeRAF) {
+      cancelAnimationFrame(this._deviceChangeRAF);
+    }
+    
+    this._deviceChangeRAF = requestAnimationFrame(() => {
+      this._deviceChangeRAF = null;
+      this.recalculateMarqueeDimensions();
+    });
   }
 
   postRender() {
