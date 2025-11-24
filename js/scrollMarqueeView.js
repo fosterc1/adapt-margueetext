@@ -209,19 +209,20 @@ class ScrollMarqueeView extends ComponentView {
       }
       
       // Calculate how many copies we need to fill viewport width + extra for seamless loop
-      const viewportWidth = window.innerWidth;
-      const itemWidth = firstItem.offsetWidth;
+      // Store as instance properties so they can be recalculated on orientation change
+      this.viewportWidth = window.innerWidth;
+      this.itemWidth = firstItem.offsetWidth;
       
         
-      if (itemWidth === 0) {
+      if (this.itemWidth === 0) {
         console.warn('ScrollMarquee: Item has no width, cannot calculate repetitions');
         return;
       }
       
       // Calculate copies needed: viewport width * 3 (to ensure coverage during scroll)
-      const copiesNeeded = Math.ceil((viewportWidth * 3) / itemWidth);
+      const copiesNeeded = Math.ceil((this.viewportWidth * 3) / this.itemWidth);
       
-      console.log(`ScrollMarquee: Viewport ${viewportWidth}px, Item ${itemWidth}px, Creating ${copiesNeeded} copies`);
+      console.log(`ScrollMarquee: Viewport ${this.viewportWidth}px, Item ${this.itemWidth}px, Creating ${copiesNeeded} copies`);
       
       // Create the needed copies
       for (let i = 0; i < copiesNeeded; i++) {
@@ -246,9 +247,10 @@ class ScrollMarqueeView extends ComponentView {
       const userSpeed = this.model.get('_speed') || 1;
       const speedMultiplier = userSpeed * 0.5;
 
-      // Store reference to the marqueeInner
+      // Store reference to the marqueeInner and loop point as instance properties
       const marqueeElement = marqueeInner;
-      const loopPoint = marqueeInner.offsetWidth / 2;
+      this.marqueeInner = marqueeInner;
+      this.loopPoint = marqueeInner.offsetWidth / 2;
       
       // Get unique component ID for debugging
       const componentId = this.model.get('_id');
@@ -289,12 +291,13 @@ class ScrollMarqueeView extends ComponentView {
           xPos += directionMultiplier * scrollDelta * speedMultiplier;
 
           // Reset position for seamless loop (adjusted for RTL)
+          // Use instance property which can be updated on orientation change
           if (isRTL) {
-            if (xPos >= loopPoint) xPos = 0;
-            if (xPos <= 0) xPos = loopPoint;
+            if (xPos >= this.loopPoint) xPos = 0;
+            if (xPos <= 0) xPos = this.loopPoint;
           } else {
-            if (xPos <= -loopPoint) xPos = 0;
-            if (xPos >= 0) xPos = -loopPoint;
+            if (xPos <= -this.loopPoint) xPos = 0;
+            if (xPos >= 0) xPos = -this.loopPoint;
           }
 
           // Apply transform
@@ -381,6 +384,9 @@ class ScrollMarqueeView extends ComponentView {
       window.addEventListener('resize', handleResize, { passive: true });
       this.resizeHandler = handleResize;
       
+      // Setup orientation change handler for mobile devices
+      this.setupOrientationHandler();
+      
     } catch (error) {
       console.error('ScrollMarquee: Critical error in setupMarquee:', error);
       this.handleError('SETUP_FAILED', 'Failed to initialize marquee animation', error);
@@ -397,16 +403,118 @@ class ScrollMarqueeView extends ComponentView {
     a11y.toggleAccessibleEnabled(this.$('.scrollmarquee__item'), true);
   }
 
+  /**
+   * Setup orientation change handler for mobile devices
+   * Detects when device rotates between portrait and landscape
+   */
+  setupOrientationHandler() {
+    // Modern browsers - use screen.orientation API
+    if (window.screen && window.screen.orientation) {
+      this.orientationHandler = () => {
+        console.log('ScrollMarquee: Orientation changed (modern API), recalculating dimensions...');
+        // Small delay to allow browser to complete orientation transition
+        setTimeout(() => {
+          this.recalculateMarqueeDimensions();
+        }, 300);
+      };
+      window.screen.orientation.addEventListener('change', this.orientationHandler);
+      console.log('ScrollMarquee: Modern orientation change listener added');
+    } else {
+      // Legacy browsers - use orientationchange event
+      this.orientationHandler = () => {
+        console.log('ScrollMarquee: Orientation changed (legacy), recalculating dimensions...');
+        setTimeout(() => {
+          this.recalculateMarqueeDimensions();
+        }, 300);
+      };
+      window.addEventListener('orientationchange', this.orientationHandler);
+      console.log('ScrollMarquee: Legacy orientation change listener added');
+    }
+  }
+
+  /**
+   * Recalculate marquee dimensions after orientation change
+   * Updates viewport width, item width, and loop point
+   */
+  recalculateMarqueeDimensions() {
+    if (!this.marqueeInner) {
+      console.log('ScrollMarquee: Cannot recalculate - marqueeInner not available');
+      return;
+    }
+    
+    const firstItem = this.marqueeInner.children[0];
+    if (!firstItem) {
+      console.log('ScrollMarquee: Cannot recalculate - no first item');
+      return;
+    }
+    
+    // Get new dimensions
+    const newViewportWidth = window.innerWidth;
+    const newItemWidth = firstItem.offsetWidth;
+    
+    // Calculate dimension changes
+    const viewportChange = Math.abs(newViewportWidth - this.viewportWidth);
+    const itemWidthChange = Math.abs(newItemWidth - this.itemWidth);
+    
+    console.log(`ScrollMarquee: Dimension changes - Viewport: ${viewportChange}px, ItemWidth: ${itemWidthChange}px`);
+    
+    // Only recalculate if dimensions changed significantly
+    // Viewport must change by more than 100px OR item width by more than 10px
+    if (viewportChange > 100 || itemWidthChange > 10) {
+      console.log('ScrollMarquee: Significant dimension change detected, updating...');
+      console.log(`  Old: viewport=${this.viewportWidth}px, item=${this.itemWidth}px`);
+      console.log(`  New: viewport=${newViewportWidth}px, item=${newItemWidth}px`);
+      
+      // Update stored dimensions
+      this.viewportWidth = newViewportWidth;
+      this.itemWidth = newItemWidth;
+      
+      // Recalculate loop point based on new marquee width
+      const oldLoopPoint = this.loopPoint;
+      this.loopPoint = this.marqueeInner.offsetWidth / 2;
+      console.log(`  Loop point: ${oldLoopPoint}px → ${this.loopPoint}px`);
+      
+      // Refresh ScrollTrigger to recalculate viewport positions
+      if (window.ScrollTrigger) {
+        console.log('ScrollMarquee: Refreshing ScrollTrigger...');
+        window.ScrollTrigger.refresh();
+      }
+      
+      console.log('ScrollMarquee: Dimension recalculation complete');
+    } else {
+      console.log('ScrollMarquee: Dimension changes too small, skipping recalculation');
+    }
+  }
+
   remove() {
+    // Clean up ScrollTrigger
     if (this.scrollTrigger) {
       this.scrollTrigger.kill();
     }
+    
+    // Clean up scroll handler
     if (this.scrollHandler) {
       window.removeEventListener('scroll', this.scrollHandler);
     }
+    
+    // Clean up resize handler
     if (this.resizeHandler) {
       window.removeEventListener('resize', this.resizeHandler);
     }
+    
+    // Clean up orientation change handler
+    if (this.orientationHandler) {
+      if (window.screen && window.screen.orientation) {
+        // Modern API
+        window.screen.orientation.removeEventListener('change', this.orientationHandler);
+        console.log('ScrollMarquee: Modern orientation change listener removed');
+      } else {
+        // Legacy API
+        window.removeEventListener('orientationchange', this.orientationHandler);
+        console.log('ScrollMarquee: Legacy orientation change listener removed');
+      }
+    }
+    
     super.remove();
   }
 

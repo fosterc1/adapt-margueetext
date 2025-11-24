@@ -5,6 +5,30 @@ All notable changes to adapt-scrollMarquee will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.2] - 2025-11-24
+
+### Fixed
+- **Orientation Change on Touch Devices**: Fixed marquee not properly filling screen and loop point issues when rotating between landscape and portrait orientations on mobile devices
+  - Added dedicated orientation change detection for both modern (`screen.orientation`) and legacy (`orientationchange`) browsers
+  - Implemented `recalculateMarqueeDimensions()` method to update viewport width, item width, and loop point after orientation changes
+  - Changed dimension storage from `const` to instance properties (`this.viewportWidth`, `this.itemWidth`, `this.loopPoint`) to allow updates
+  - Added 300ms delay after orientation change to allow browser to complete transition
+  - Enhanced `remove()` method to properly clean up orientation change listeners
+
+### Technical Details
+- Modern browsers: Uses `window.screen.orientation.addEventListener('change')`
+- Legacy browsers: Falls back to `window.addEventListener('orientationchange')`
+- Recalculation triggers when viewport changes by >100px OR item width changes by >10px
+- Automatically refreshes ScrollTrigger positions after dimension updates
+- Proper cleanup prevents memory leaks from orientation listeners
+
+### Benefits
+- Marquee consistently fills entire viewport after orientation changes
+- Seamless loop maintains without visible jumps
+- ScrollTrigger positions accurately updated
+- Improved mobile user experience
+- Aligns with orientation fixes in adapt-backgroundvideo and adapt-article-blockslider
+
 ## [4.1.1] - 2024-11-22
 
 ### Changed
