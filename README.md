@@ -1,9 +1,13 @@
 # adapt-scrollMarquee
 
-[![Version](https://img.shields.io/badge/version-4.1.1-blue.svg)](https://github.com/fosterc1/adapt-scrollMarquee)
+[![Adapt Framework Version](https://img.shields.io/badge/adapt%20framework-v5.0.0+-blue.svg)](https://github.com/adaptlearning/adapt_framework)
 [![License](https://img.shields.io/badge/license-GPL--3.0-green.svg)](LICENSE)
-[![Adapt Framework](https://img.shields.io/badge/Adapt-v5.53.3+-orange.svg)](https://github.com/adaptlearning/adapt_framework)
-[![WCAG](https://img.shields.io/badge/WCAG-2.1_AA-brightgreen.svg)](https://www.w3.org/WAI/WCAG21/quickref/)
+[![Version](https://img.shields.io/badge/version-4.1.2-orange.svg)](https://github.com/fosterc1/adapt-margueetext/releases)
+[![Accessibility](https://img.shields.io/badge/accessibility-WCAG%202.1%20AA-brightgreen.svg)](#accessibility)
+[![RTL Support](https://img.shields.io/badge/RTL-supported-success.svg)](#accessibility)
+[![Maintained](https://img.shields.io/badge/maintained-yes-success.svg)](https://github.com/fosterc1/adapt-margueetext)
+[![Downloads](https://img.shields.io/github/downloads/fosterc1/adapt-margueetext/total.svg)](https://github.com/fosterc1/adapt-margueetext/releases)
+[![Stars](https://img.shields.io/github/stars/fosterc1/adapt-margueetext.svg)](https://github.com/fosterc1/adapt-margueetext/stargazers)
 
 **Scrolling Marquee Text** is a _presentation component_ for the Adapt Framework which displays a horizontal scrolling marquee of text that animates in response to page scroll velocity.
 
@@ -290,6 +294,44 @@ The component uses **CSS Custom Properties** for easy styling customization. All
 
 ## 📝 Changelog
 
+### v4.1.2 (2025-11-24) - Orientation Change Fix
+
+**🔴 Critical Fix:**
+- ✅ **Orientation Change Handling** - Fixed marquee layout issues on device rotation
+  - Marquee now properly fills screen after portrait ↔ landscape transitions
+  - Fixed visible jumps at loop point caused by cached dimensions
+  - Added explicit orientation change detection (modern + legacy APIs)
+  - Implemented dynamic dimension recalculation on orientation change
+  - Enhanced cleanup to prevent memory leaks
+
+**🟢 Technical Improvements:**
+- ✅ **setupOrientationHandler()** - New method for orientation change detection
+- ✅ **recalculateMarqueeDimensions()** - Dynamic viewport/item width recalculation
+- ✅ **Instance Properties** - viewportWidth, itemWidth, loopPoint now instance properties
+- ✅ **ScrollTrigger Refresh** - Automatic position updates after dimension changes
+- ✅ **300ms Delay** - Prevents calculation during rotation animation
+
+**📱 Mobile Reliability:**
+- Seamless experience on device rotation
+- No visible jumps or layout gaps
+- Accurate ScrollTrigger positions
+- Proper viewport filling in both orientations
+
+**🔗 Links:**
+- [Release v4.1.2](https://github.com/fosterc1/adapt-margueetext/releases/tag/v4.1.2)
+- [Download ZIP](https://github.com/fosterc1/adapt-margueetext/archive/v4.1.2.zip)
+- [View Changes](https://github.com/fosterc1/adapt-margueetext/compare/v4.1.1...v4.1.2)
+
+---
+
+### v4.1.1 (2024-11-22) - Documentation Update
+
+**🔧 Maintenance:**
+- ✅ **Documentation Cleanup** - Streamlined README and guides
+- ✅ **No Code Changes** - Identical functionality to v4.1.0
+
+---
+
 ### v4.0.2 (2025-11-22) - AAT Testing Release
 
 **🔧 Maintenance:**
@@ -405,9 +447,9 @@ This project is licensed under the **GPL-3.0 License** - see the [LICENSE](LICEN
 **Accessibility support:** WCAG 2.1 AA Compliant<br>
 **RTL support:** Yes (since v3.13.0)<br>
 **Cross-platform coverage:** Chrome 60+, Firefox 55+, Safari 12+, Edge 79+, Chrome Mobile, iOS Safari 12+<br>
-**Adapt Framework:** v5.53.3+<br>
+**Adapt Framework:** v5.0.0+<br>
 **Adapt Authoring Tool:** v0.11.5+<br>
-**Version:** 4.0.6<br>
+**Version:** 4.1.2<br>
 **Overall Rating:** 9.2/10 (A) - Production Ready
 
 ---
