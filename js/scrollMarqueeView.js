@@ -98,16 +98,65 @@ class ScrollMarqueeView extends ComponentView {
   preRender() {
     this.listenTo(this.model, 'change:_isComplete', this.onCompleteChange);
     
-    // Listen to Adapt's device:changed event with debouncing + RAF batching
+    // Listen to Adapt's device:changed event with 1000ms debouncing
+    // Extended from 500ms to prevent rapid oscillations during orientation changes
     // This prevents visual "page refresh" when multiple marquees exist
-    this._debouncedDeviceChanged = _.debounce(this.onDeviceChanged.bind(this), 500);
+    this._debouncedDeviceChanged = _.debounce(this.onDeviceChanged.bind(this), 1000);
     this.listenTo(Adapt, 'device:changed', this._debouncedDeviceChanged);
+    
+    // Track last viewport width to detect oscillations
+    this._lastViewportWidth = window.innerWidth;
+    this._deviceChangeCount = 0;
   }
   
   onDeviceChanged(screenSize) {
-    console.log('ScrollMarquee: device:changed - screenSize:', screenSize, 'viewport:', window.innerWidth + 'px');
+    const currentWidth = window.innerWidth;
+    console.log('ScrollMarquee: device:changed - screenSize:', screenSize, 'viewport:', currentWidth + 'px');
     
-    // Use requestAnimationFrame to batch all marquee updates together
+    // CRITICAL FIX: Detect rapid viewport oscillations (e.g., 734px ↔ 393px bouncing)
+    // If viewport width changes back and forth rapidly, ignore subsequent changes
+    if (Math.abs(currentWidth - this._lastViewportWidth) < 50) {
+      console.log('ScrollMarquee: Ignoring minimal viewport change (' + Math.abs(currentWidth - this._lastViewportWidth) + 'px)');
+      return;
+    }
+    
+    // Increment device change counter
+    this._deviceChangeCount++;
+    console.log('ScrollMarquee: device:changed count:', this._deviceChangeCount);
+    
+    // If we've received more than 3 device:changed events in rapid succession, something is wrong
+    // Reset the counter after 2 seconds of stability
+    if (this._resetCounterTimeout) {
+      clearTimeout(this._resetCounterTimeout);
+    }
+    this._resetCounterTimeout = setTimeout(() => {
+      console.log('ScrollMarquee: Resetting device:changed counter after stability');
+      this._deviceChangeCount = 0;
+    }, 2000);
+    
+    // If we've detected an oscillation pattern (>3 changes), increase debounce dramatically
+    if (this._deviceChangeCount > 3) {
+      console.warn('ScrollMarquee: Detected rapid device:changed oscillation, delaying recalculation');
+      
+      // Cancel existing RAF
+      if (this._deviceChangeRAF) {
+        cancelAnimationFrame(this._deviceChangeRAF);
+      }
+      
+      // Wait 2 seconds for things to settle
+      if (this._oscillationTimeout) {
+        clearTimeout(this._oscillationTimeout);
+      }
+      this._oscillationTimeout = setTimeout(() => {
+        console.log('ScrollMarquee: Oscillation settled, recalculating now');
+        this._lastViewportWidth = window.innerWidth;
+        this.recalculateMarqueeDimensions();
+      }, 2000);
+      
+      return;
+    }
+    
+    // Normal case: use requestAnimationFrame to batch all marquee updates together
     // This prevents visual "page refresh" when multiple marquees update simultaneously
     if (this._deviceChangeRAF) {
       cancelAnimationFrame(this._deviceChangeRAF);
@@ -115,6 +164,7 @@ class ScrollMarqueeView extends ComponentView {
     
     this._deviceChangeRAF = requestAnimationFrame(() => {
       this._deviceChangeRAF = null;
+      this._lastViewportWidth = currentWidth;
       this.recalculateMarqueeDimensions();
     });
   }
