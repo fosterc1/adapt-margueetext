@@ -96,6 +96,7 @@ class ScrollMarqueeView extends ComponentView {
   }
 
   preRender() {
+    console.log('🎯 ScrollMarquee v4.1.7 - Instance ID:', this.model.get('_id'));
     this.listenTo(this.model, 'change:_isComplete', this.onCompleteChange);
     
     // Listen to Adapt's device:changed event with 1000ms debouncing
