@@ -425,35 +425,11 @@ class ScrollMarqueeView extends ComponentView {
       // Store handler reference for cleanup
       this.scrollHandler = handleScroll;
       
-      // Debounced resize handler for performance
-      let resizeTimeout;
-      const handleResize = () => {
-        try {
-          // Clear previous timeout
-          if (resizeTimeout) {
-            clearTimeout(resizeTimeout);
-          }
-          
-          // Debounce resize handler (wait 150ms after resize stops)
-          resizeTimeout = setTimeout(() => {
-            // Recalculate if viewport width changed significantly
-            const newViewportWidth = window.innerWidth;
-            const widthDiff = Math.abs(newViewportWidth - this.viewportWidth);
-            
-            // Only recalculate if width changed by more than 100px (avoid minor adjustments)
-            if (widthDiff > 100) {
-              console.log('ScrollMarquee: Viewport width changed significantly, refreshing');
-              // Refresh ScrollTrigger to recalculate positions
-              ScrollTrigger.refresh();
-            }
-          }, 150);
-        } catch (error) {
-          console.error('ScrollMarquee: Error in resize handler:', error);
-        }
-      };
-      
-      window.addEventListener('resize', handleResize, { passive: true });
-      this.resizeHandler = handleResize;
+      // REMOVED: Redundant resize handler
+      // This caused issues when one instance was initialized during orientation changes
+      // with incorrect viewportWidth, triggering refresh loops.
+      // Orientation changes are now handled exclusively by Adapt's device:changed event
+      // with proper debouncing and oscillation detection (see onDeviceChanged method).
       
       // REMOVED: Native orientation change handler (now handled by Adapt's device:changed event)
       // this.setupOrientationHandler();
@@ -542,12 +518,8 @@ class ScrollMarqueeView extends ComponentView {
       window.removeEventListener('scroll', this.scrollHandler);
     }
     
-    // Clean up resize handler
-    if (this.resizeHandler) {
-      window.removeEventListener('resize', this.resizeHandler);
-    }
-    
-    // REMOVED: Orientation change handler cleanup (no longer needed)
+    // REMOVED: resize and orientation handlers cleanup (no longer needed)
+    // Orientation changes now handled exclusively by Adapt's device:changed event
     
     super.remove();
   }
