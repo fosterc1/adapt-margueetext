@@ -388,7 +388,7 @@ class ScrollMarqueeView extends ComponentView {
           resizeTimeout = setTimeout(() => {
             // Recalculate if viewport width changed significantly
             const newViewportWidth = window.innerWidth;
-            const widthDiff = Math.abs(newViewportWidth - viewportWidth);
+            const widthDiff = Math.abs(newViewportWidth - this.viewportWidth);
             
             // Only recalculate if width changed by more than 100px (avoid minor adjustments)
             if (widthDiff > 100) {
