@@ -1,12 +1,12 @@
 {
   "name": "adapt-scrollMarquee",
-  "version": "4.1.7",
+  "version": "4.1.9",
   "framework": "^5.0.0",
   "homepage": "https://github.com/fosterc1/adapt-margueetext",
   "displayName": "Scrolling Marquee Text",
   "component": "scrollMarquee",
   "description": "A scroll-velocity-based marquee component with RTL support, WCAG 2.1 AA accessibility, and GSAP ScrollTrigger animations",
-  "main": "/js/adapt-scrollMarquee.js",
+  "main": "js/scrollMarqueeView.js",
   "keywords": [
     "adapt-plugin",
     "adapt-component",
@@ -20,5 +20,10 @@
     "animation"
   ],
   "license": "GPL-3.0",
-  "targetAttribute": "_component"
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test"
+  ]
 }
